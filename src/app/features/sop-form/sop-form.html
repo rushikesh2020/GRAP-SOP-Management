@@ -1,0 +1,341 @@
+@if (user; as currentUser) {
+  <app-header [user]="currentUser"></app-header>
+}
+
+@if (loading) {
+  <div class="text-center p-5" role="status">
+    <div class="spinner-border text-axis"></div>
+
+    <p class="text-muted mt-3">Loading SOP...</p>
+  </div>
+} @else {
+  <main class="container-fluid form-container py-4">
+    <!-- Page heading -->
+    <div class="d-flex align-items-center gap-3 mb-4">
+      <button
+        type="button"
+        class="btn btn-outline-secondary"
+        [disabled]="saving"
+        (click)="cancel()"
+        aria-label="Back to dashboard"
+      >
+        <i class="bi bi-arrow-left"></i>
+      </button>
+
+      <div>
+        <h2 class="fw-bold mb-1">
+          {{ existingSop ? 'Edit SOP' : 'Add SOP' }}
+        </h2>
+
+        <p class="text-muted mb-0">
+          @if (existingSop) {
+            {{ existingSop.id }} · Version {{ existingSop.version }}
+          } @else {
+            Upload a document and enter the SOP details.
+          }
+        </p>
+      </div>
+    </div>
+
+    <!-- Reviewer remarks -->
+    @if (existingSop?.reviewerRemarks && isModification) {
+      <div class="alert alert-warning mb-4">
+        <h6 class="fw-bold">
+          <i class="bi bi-chat-left-text me-2" aria-hidden="true"></i>
+
+          Reviewer remarks
+        </h6>
+
+        <p class="mb-0">
+          {{ existingSop?.reviewerRemarks }}
+        </p>
+      </div>
+    }
+
+    <!-- Save error -->
+    @if (saveError) {
+      <div class="alert alert-danger" role="alert">
+        {{ saveError }}
+      </div>
+    }
+
+    <form [formGroup]="sopForm" (ngSubmit)="save('submit')">
+      <fieldset [disabled]="saving">
+        <div class="row g-4">
+          <!-- LEFT SIDE: Document upload -->
+          <div class="col-12 col-lg-6">
+            <section class="card shadow-sm">
+              <div class="card-body p-4">
+                <h5 class="fw-semibold mb-4">
+                  <i class="bi bi-file-earmark-arrow-up text-axis me-2" aria-hidden="true"></i>
+                  SOP Document
+                </h5>
+
+                <label class="form-label fw-medium">
+                  Upload File <span class="text-danger">*</span>
+                </label>
+
+                <!-- Hidden file input -->
+                <input
+                  #fileInput
+                  type="file"
+                  class="d-none"
+                  accept=".pdf,.doc,.docx"
+                  (change)="onFileSelected($event)"
+                />
+
+                <!-- Drag and drop area -->
+                <div
+                  class="upload-zone"
+                  [class.dragging]="dragging"
+                  [class.has-file]="fileName"
+                  [class.upload-invalid]="
+                    fileError ||
+                    (sopForm.controls.document.invalid && sopForm.controls.document.touched)
+                  "
+                  (dragover)="onDragOver($event)"
+                  (dragleave)="onDragLeave($event)"
+                  (drop)="onDrop($event)"
+                >
+                  @if (fileName) {
+                    <i
+                      class="bi bi-file-earmark-check display-5 text-success"
+                      aria-hidden="true"
+                    ></i>
+
+                    <div class="fw-semibold mt-3 text-break">
+                      {{ fileName }}
+                    </div>
+
+                    <p class="text-muted small mt-1">
+                      @if (
+                        !existingSop?.document?.storageKey &&
+                        existingSop &&
+                        sopForm.controls.document.value === existingSop.document
+                      ) {
+                        Sample document
+                      } @else {
+                        Document selected
+                      }
+                    </p>
+                  } @else {
+                    <i class="bi bi-cloud-arrow-up display-5 text-axis" aria-hidden="true"></i>
+
+                    <h6 class="mt-3">Drag and drop your SOP file</h6>
+
+                    <p class="text-muted small">or browse files</p>
+                  }
+
+                  <button
+                    type="button"
+                    class="btn btn-outline-primary btn-sm"
+                    (click)="fileInput.click()"
+                  >
+                    {{ fileName ? 'Replace file' : 'Choose file' }}
+                  </button>
+
+                  <div class="small text-muted mt-3">PDF, DOC, DOCX · Maximum 10 MB</div>
+                </div>
+
+                <!-- File validation errors -->
+                @if (fileError) {
+                  <div class="text-danger small mt-2" role="alert">
+                    {{ fileError }}
+                  </div>
+                } @else if (
+                  sopForm.controls.document.invalid && sopForm.controls.document.touched
+                ) {
+                  <div class="text-danger small mt-2" role="alert">SOP document is required.</div>
+                }
+
+                <!-- Reusable preview -->
+                <h6 class="fw-semibold mt-4 mb-3">Document Preview</h6>
+
+                <app-document-preview [file]="previewBlob" [fileName]="fileName">
+                </app-document-preview>
+              </div>
+            </section>
+          </div>
+
+          <!-- RIGHT SIDE: SOP details -->
+          <div class="col-12 col-lg-6">
+            <section class="card shadow-sm">
+              <div class="card-body p-4">
+                <h5 class="fw-semibold mb-4">
+                  <i class="bi bi-card-text me-2 text-axis" aria-hidden="true"></i>
+
+                  SOP Details
+                </h5>
+
+                <!-- SOP Name -->
+                <div class="mb-4">
+                  <label for="sopName" class="form-label fw-medium">
+                    SOP Name
+                    <span class="text-danger">*</span>
+                  </label>
+
+                  <input
+                    id="sopName"
+                    class="form-control"
+                    formControlName="name"
+                    required
+                    placeholder="Enter SOP name"
+                    [class.is-invalid]="
+                      sopForm.controls.name.invalid && sopForm.controls.name.touched
+                    "
+                  />
+
+                  @if (sopForm.controls.name.invalid && sopForm.controls.name.touched) {
+                    <div class="invalid-feedback">SOP name is required.</div>
+                  }
+                </div>
+
+                <div class="row g-3 mb-4">
+                  <!-- Category -->
+                  <div class="col-md-6">
+                    <label for="category" class="form-label fw-medium">
+                      Category
+                      <span class="text-danger">*</span>
+                    </label>
+
+                    <select
+                      id="category"
+                      class="form-select"
+                      formControlName="category"
+                      required
+                      (change)="onCategoryChange()"
+                      [class.is-invalid]="
+                        sopForm.controls.category.invalid && sopForm.controls.category.touched
+                      "
+                    >
+                      <option value="">Select category</option>
+
+                      @for (category of categories; track category) {
+                        <option [value]="category">
+                          {{ category }}
+                        </option>
+                      }
+                    </select>
+
+                    @if (sopForm.controls.category.invalid && sopForm.controls.category.touched) {
+                      <div class="invalid-feedback">Category is required.</div>
+                    }
+                  </div>
+
+                  <!-- Sub-category -->
+                  <div class="col-md-6">
+                    <label for="subCategory" class="form-label fw-medium">
+                      Sub-category
+                      <span class="text-danger">*</span>
+                    </label>
+
+                    <select
+                      id="subCategory"
+                      class="form-select"
+                      formControlName="subCategory"
+                      required
+                      [class.is-invalid]="
+                        sopForm.controls.subCategory.invalid && sopForm.controls.subCategory.touched
+                      "
+                    >
+                      <option value="">Select sub-category</option>
+
+                      @for (sub of subCategories; track sub) {
+                        <option [value]="sub">{{ sub }}</option>
+                      }
+                    </select>
+
+                    @if (
+                      sopForm.controls.subCategory.invalid && sopForm.controls.subCategory.touched
+                    ) {
+                      <div class="invalid-feedback">Sub-category is required.</div>
+                    }
+                  </div>
+                </div>
+
+                <!-- Version -->
+                <div class="mb-4">
+                  <label for="version" class="form-label fw-medium"> Version </label>
+
+                  <input
+                    id="version"
+                    class="form-control bg-light"
+                    [value]="'v' + version"
+                    readonly
+                  />
+
+                  <div class="form-text">Version is automatically managed by the system.</div>
+                </div>
+
+                <!-- Comments -->
+                <div class="mb-4">
+                  <label for="comments" class="form-label fw-medium">
+                    Comments
+                    <span class="text-muted fw-normal"> (Optional) </span>
+                  </label>
+
+                  <textarea
+                    id="comments"
+                    rows="5"
+                    class="form-control"
+                    formControlName="comments"
+                    placeholder="Enter additional details for the reviewer..."
+                  >
+                  </textarea>
+                </div>
+
+                @if (isModification) {
+                  <div class="alert alert-light border small">
+                    <i class="bi bi-info-circle me-2" aria-hidden="true"></i>
+
+                    Describe the changes you have made before resubmitting this SOP.
+                  </div>
+                }
+
+                <p class="small text-muted mb-0">
+                  <span class="text-danger">*</span>
+                  Indicates mandatory fields.
+                </p>
+              </div>
+            </section>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- Action buttons -->
+      <div class="d-flex flex-wrap justify-content-end gap-2 mt-4 border-top pt-3">
+        <button
+          type="button"
+          class="btn btn-outline-secondary"
+          [disabled]="saving"
+          (click)="cancel()"
+        >
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-outline-primary"
+          [disabled]="saving"
+          (click)="save('draft')"
+        >
+          <i class="bi bi-floppy me-2" aria-hidden="true"></i>
+
+          {{ isModification ? 'Save Changes' : 'Save Draft' }}
+        </button>
+
+        <button type="submit" class="btn btn-primary" [disabled]="saving">
+          @if (saving) {
+            <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+
+            Saving...
+          } @else {
+            <i class="bi bi-send me-2" aria-hidden="true"></i>
+
+            {{ isModification ? 'Save & Resubmit' : 'Save & Submit' }}
+          }
+        </button>
+      </div>
+    </form>
+  </main>
+}

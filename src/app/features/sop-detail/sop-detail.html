@@ -1,0 +1,314 @@
+@if (user; as currentUser) {
+  <app-header [user]="currentUser"></app-header>
+}
+
+@if (loading) {
+  <div class="text-center p-5" role="status">
+    <div class="spinner-border text-axis"></div>
+
+    <p class="text-muted mt-3">Loading SOP details...</p>
+  </div>
+} @else if (loadError) {
+  <div class="container py-5">
+    <div class="alert alert-danger" role="alert">
+      {{ loadError }}
+    </div>
+
+    <button class="btn btn-outline-secondary" (click)="back()">Back to dashboard</button>
+  </div>
+} @else if (sop; as item) {
+  <main class="container-fluid detail-container py-4">
+    <!-- Page heading -->
+    <div class="d-flex flex-wrap align-items-center gap-3 mb-4">
+      <button
+        type="button"
+        class="btn btn-outline-secondary"
+        [disabled]="saving"
+        aria-label="Back to dashboard"
+        (click)="back()"
+      >
+        <i class="bi bi-arrow-left" aria-hidden="true"></i>
+      </button>
+
+      <div class="flex-grow-1">
+        <h2 class="fw-bold mb-1">
+          {{ mode === 'review' ? 'Review SOP' : 'View SOP' }}
+        </h2>
+
+        <p class="text-muted mb-0">
+          {{ item.name }}
+        </p>
+      </div>
+
+      <span [class]="'status-badge ' + statusClasses[item.status]">
+        {{ item.status }}
+      </span>
+      <button
+        type="button"
+        class="btn btn-outline-secondary"
+        [disabled]="saving"
+        (click)="activityDrawer.open(item.id)"
+      >
+        <i class="bi bi-clock-history me-2" aria-hidden="true"></i>
+
+        View Activity
+      </button>
+    </div>
+
+    <!-- Action error -->
+    @if (actionError) {
+      <div class="alert alert-danger" role="alert">
+        {{ actionError }}
+      </div>
+    }
+
+    <div class="row g-4">
+      <!-- LEFT SIDE: Document -->
+      <div class="col-12 col-lg-7">
+        <section class="card shadow-sm h-100">
+          <div class="card-body p-4">
+            <h5 class="fw-semibold mb-3">
+              <i class="bi bi-file-earmark-text me-2 text-axis" aria-hidden="true"></i>
+
+              Document Preview
+            </h5>
+
+            @if (documentError) {
+              <div class="alert alert-warning" role="alert">
+                {{ documentError }}
+              </div>
+            }
+
+            @if (!item.document.storageKey) {
+              <p class="small text-muted">Sample document for demonstration.</p>
+            }
+
+            <app-document-preview [file]="previewBlob" [fileName]="item.document.name">
+            </app-document-preview>
+          </div>
+        </section>
+      </div>
+
+      <!-- RIGHT SIDE: SOP information -->
+      <div class="col-12 col-lg-5">
+        <section class="card shadow-sm h-100">
+          <div class="card-body p-4">
+            <h5 class="fw-semibold mb-4">
+              <i class="bi bi-info-circle me-2 text-axis" aria-hidden="true"></i>
+
+              SOP Information
+            </h5>
+
+            <dl class="row sop-details">
+              <dt class="col-5">SOP ID</dt>
+              <dd class="col-7">{{ item.id }}</dd>
+
+              <dt class="col-5">SOP Name</dt>
+              <dd class="col-7">{{ item.name }}</dd>
+
+              <dt class="col-5">Version</dt>
+              <dd class="col-7">v{{ item.version }}</dd>
+
+              <dt class="col-5">Category</dt>
+              <dd class="col-7">{{ item.category }}</dd>
+
+              <dt class="col-5">Sub-category</dt>
+              <dd class="col-7">{{ item.subCategory }}</dd>
+
+              <dt class="col-5">Uploaded By</dt>
+              <dd class="col-7">
+                {{ item.uploadedBy.name }}
+
+                <div class="small text-muted text-break">
+                  {{ item.uploadedBy.email }}
+                </div>
+              </dd>
+
+              <dt class="col-5">Created Date</dt>
+              <dd class="col-7">
+                {{ item.createdAt | date: 'dd MMM yyyy' : '+0530' }}
+              </dd>
+
+              <dt class="col-5">Last Updated</dt>
+              <dd class="col-7">
+                {{ item.updatedAt | date: 'dd MMM yyyy' : '+0530' }}
+              </dd>
+            </dl>
+
+            <hr />
+
+            <!-- Creator's comments -->
+            <h6 class="fw-semibold">Creator Comments</h6>
+
+            <div class="bg-light rounded p-3 mb-3 comments-box">
+              {{ item.comments || 'No comments provided.' }}
+            </div>
+
+            <!-- Existing reviewer remarks -->
+            @if (item.reviewerRemarks) {
+              <div class="alert alert-warning">
+                <h6 class="fw-semibold">Previous Reviewer Remarks</h6>
+
+                <div class="comments-box">
+                  {{ item.reviewerRemarks }}
+                </div>
+              </div>
+            }
+
+            <!-- Only available in Review mode -->
+            @if (canReview) {
+              <hr />
+
+              <label for="reviewRemarks" class="form-label fw-semibold"> Reviewer Remarks </label>
+
+              <textarea
+                id="reviewRemarks"
+                class="form-control"
+                rows="5"
+                [formControl]="remarksControl"
+                aria-describedby="remarksHelp"
+                placeholder="Enter your review remarks..."
+                [class.is-invalid]="remarksControl.invalid && remarksControl.touched"
+              >
+              </textarea>
+
+              @if (remarksControl.invalid && remarksControl.touched) {
+                <div class="invalid-feedback">Remarks are required for this action.</div>
+              }
+
+              <div id="remarksHelp" class="form-text">
+                Mandatory for rejection and modification requests. Optional for approval.
+              </div>
+            }
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- Review action buttons -->
+    @if (canReview) {
+      <div class="d-flex flex-wrap justify-content-end gap-2 mt-4 border-top pt-3">
+        <button
+          type="button"
+          class="btn btn-outline-secondary"
+          [disabled]="saving"
+          (click)="back()"
+        >
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-outline-danger"
+          [disabled]="saving"
+          (click)="requestDecision('Rejected', confirmDialog)"
+        >
+          <i class="bi bi-x-circle me-1" aria-hidden="true"></i>
+
+          Reject
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-outline-warning"
+          [disabled]="saving"
+          (click)="requestDecision('Requested Modification', confirmDialog)"
+        >
+          <i class="bi bi-pencil-square me-1" aria-hidden="true"></i>
+
+          Request Modification
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-primary"
+          [disabled]="saving || !previewBlob"
+          (click)="requestDecision('Approved', confirmDialog)"
+        >
+          <i class="bi bi-check-circle me-1" aria-hidden="true"></i>
+
+          Approve & Publish
+        </button>
+      </div>
+
+      <p class="text-muted text-end small mt-2">
+        Knowledge-base publishing is simulated in this POC.
+      </p>
+    } @else {
+      <div class="text-end mt-4">
+        <button class="btn btn-outline-secondary" (click)="back()">Back to Dashboard</button>
+      </div>
+    }
+    <app-activity #activityDrawer></app-activity>
+  </main>
+}
+
+<!-- Confirmation dialog -->
+<dialog
+  #confirmDialog
+  class="confirmation-dialog"
+  aria-labelledby="confirmationTitle"
+  aria-describedby="confirmationDescription"
+  (close)="pendingDecision = null"
+>
+  <div class="p-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 id="confirmationTitle" class="fw-semibold mb-0">
+        {{ confirmationTitle }}
+      </h5>
+
+      <button
+        type="button"
+        class="btn-close"
+        aria-label="Close confirmation"
+        (click)="cancelDecision(confirmDialog)"
+      ></button>
+    </div>
+
+    <p id="confirmationDescription" class="text-muted">
+      {{ confirmationMessage }}
+    </p>
+
+    @if (sop; as item) {
+      <div class="bg-light rounded p-3 mb-3">
+        <div class="fw-semibold">
+          {{ item.name }}
+        </div>
+
+        <small class="text-muted"> {{ item.id }} · Version {{ item.version }} </small>
+      </div>
+    }
+
+    @if (remarksControl.value.trim()) {
+      <div class="mb-3">
+        <small class="fw-semibold">Your remarks</small>
+
+        <div class="small comments-box mt-1">
+          {{ remarksControl.value }}
+        </div>
+      </div>
+    }
+
+    <div class="d-flex justify-content-end gap-2 mt-4">
+      <button
+        type="button"
+        class="btn btn-outline-secondary"
+        autofocus
+        (click)="cancelDecision(confirmDialog)"
+      >
+        Cancel
+      </button>
+
+      <button
+        type="button"
+        class="btn"
+        [class.btn-danger]="pendingDecision === 'Rejected'"
+        [class.btn-primary]="pendingDecision !== 'Rejected'"
+        [disabled]="saving"
+        (click)="confirmDecision(confirmDialog)"
+      >
+        Confirm
+      </button>
+    </div>
+  </div>
+</dialog>

@@ -1,0 +1,53 @@
+.form-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+.upload-zone {
+  border: 2px dashed #ced4da;
+  border-radius: 10px;
+  background: #f8f9fa;
+  padding: 28px 16px;
+  text-align: center;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s;
+}
+
+.upload-zone:hover,
+.upload-zone.dragging {
+  border-color: var(--axis-primary);
+  background-color: #fbf0f5;
+}
+
+.upload-zone.has-file {
+  border-style: solid;
+  border-color: #a3cfbb;
+  background-color: #f2faf5;
+}
+
+.upload-zone.upload-invalid {
+  border-color: #dc3545;
+}
+
+.form-label {
+  font-size: 14px;
+}
+
+.form-control,
+.form-select {
+  min-height: 42px;
+}
+
+textarea.form-control {
+  resize: vertical;
+}
+
+@media (max-width: 768px) {
+  .form-container {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+}

@@ -1,0 +1,55 @@
+<div class="document-preview">
+  @if (!file) {
+    <div class="preview-empty">
+      <i class="bi bi-file-earmark-text display-5 text-muted" aria-hidden="true"></i>
+
+      <p class="text-muted mt-3 mb-0">No document selected</p>
+
+      <small class="text-muted"> Upload a file to see its preview. </small>
+    </div>
+  } @else {
+    <div
+      class="d-flex flex-wrap align-items-center justify-content-between gap-2 border-bottom p-3"
+    >
+      <div class="text-break">
+        <i class="bi bi-file-earmark-text text-axis me-2" aria-hidden="true"></i>
+
+        <span class="fw-semibold small">
+          {{ fileName }}
+        </span>
+      </div>
+
+      @if (downloadUrl) {
+        <a [href]="downloadUrl" [download]="fileName" class="btn btn-outline-secondary btn-sm">
+          <i class="bi bi-download me-1" aria-hidden="true"></i>
+
+          Download
+        </a>
+      }
+    </div>
+
+    @if (loading) {
+      <div class="text-center p-5" role="status">
+        <div class="spinner-border text-axis"></div>
+
+        <p class="text-muted mt-2">Generating preview...</p>
+      </div>
+    } @else if (pdfUrl) {
+      <iframe [src]="pdfUrl" class="pdf-preview" title="SOP PDF document preview"> </iframe>
+    } @else if (wordText) {
+      <div class="word-preview">
+        <p class="small text-muted border-bottom pb-2">Word document · Text preview</p>
+
+        <div class="word-content">{{ wordText }}</div>
+      </div>
+    } @else {
+      <div class="text-center p-4">
+        <i class="bi bi-file-earmark-word display-5 text-axis" aria-hidden="true"></i>
+
+        <p class="text-muted mt-3">
+          {{ previewMessage }}
+        </p>
+      </div>
+    }
+  }
+</div>

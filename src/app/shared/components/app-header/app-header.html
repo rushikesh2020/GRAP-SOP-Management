@@ -1,0 +1,33 @@
+<header class="navbar bg-axis text-white px-3 px-md-4 py-3">
+  <div class="container-fluid gap-3">
+    <a routerLink="/dashboard" class="navbar-brand text-white">
+      <span class="fw-bold">AXIS BANK</span>
+
+      <span class="mx-2 opacity-50">|</span>
+
+      <span class="fs-6">GRAP</span>
+    </a>
+
+    <div class="d-flex align-items-center gap-3 ms-auto">
+      <div class="avatar" aria-hidden="true">
+        {{ user.name.charAt(0) }}
+      </div>
+
+      <div>
+        <div class="fw-semibold">
+          {{ user.name }}
+        </div>
+
+        <small class="opacity-75">
+          {{ user.role }}
+        </small>
+      </div>
+
+      <button class="btn btn-outline-light btn-sm" (click)="signOut()">
+        <i class="bi bi-box-arrow-right me-1" aria-hidden="true"></i>
+
+        Sign out
+      </button>
+    </div>
+  </div>
+</header>

@@ -1,0 +1,37 @@
+.document-preview {
+  min-height: 300px;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  background-color: #fff;
+  overflow: hidden;
+}
+
+.preview-empty {
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: #f8f9fa;
+}
+
+.pdf-preview {
+  width: 100%;
+  height: 480px;
+  border: 0;
+  display: block;
+}
+
+.word-preview {
+  padding: 24px;
+  max-height: 480px;
+  overflow: auto;
+}
+
+.word-content {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.8;
+  font-size: 14px;
+}

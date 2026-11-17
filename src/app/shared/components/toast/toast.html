@@ -1,0 +1,49 @@
+<!-- Persistent live regions for screen readers -->
+
+<div class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
+  @if (polite$ | async; as announcement) {
+    {{ announcement.title }}: {{ announcement.message }}
+  }
+</div>
+
+<div class="visually-hidden" role="alert" aria-live="assertive" aria-atomic="true">
+  @if (assertive$ | async; as announcement) {
+    {{ announcement.title }}: {{ announcement.message }}
+  }
+</div>
+
+<!-- Visible toast notifications -->
+
+<div class="toast-container grap-toast-container">
+  @for (notification of notifications$ | async; track notification.id) {
+    <div
+      class="toast show shadow"
+      [class]="'toast show shadow toast-' + notification.type"
+      role="group"
+      [attr.aria-label]="notification.title"
+      (mouseenter)="pause(notification.id, 'hover')"
+      (mouseleave)="resume(notification.id, 'hover')"
+      (focusin)="pause(notification.id, 'focus')"
+      (focusout)="onFocusOut(notification.id, $event)"
+    >
+      <div class="toast-header">
+        <i [class]="'bi me-2 ' + icons[notification.type]" aria-hidden="true"> </i>
+
+        <strong class="me-auto">
+          {{ notification.title }}
+        </strong>
+
+        <button
+          type="button"
+          class="btn-close"
+          [attr.aria-label]="'Dismiss ' + notification.title"
+          (click)="dismiss(notification.id)"
+        ></button>
+      </div>
+
+      <div class="toast-body">
+        {{ notification.message }}
+      </div>
+    </div>
+  }
+</div>

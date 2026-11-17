@@ -1,1 +1,105 @@
 /* You can add global styles to this file, and also import other style files */
+:root {
+  --axis-primary: #97144d;
+  --axis-primary-dark: #760e3c;
+  --axis-background: #f5f6f8;
+  --axis-text: #212529;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background-color: var(--axis-background);
+  color: var(--axis-text);
+}
+
+.btn-primary {
+  --bs-btn-bg: var(--axis-primary);
+  --bs-btn-border-color: var(--axis-primary);
+  --bs-btn-hover-bg: var(--axis-primary-dark);
+  --bs-btn-hover-border-color: var(--axis-primary-dark);
+  --bs-btn-active-bg: var(--axis-primary-dark);
+  --bs-btn-active-border-color: var(--axis-primary-dark);
+}
+
+.text-axis {
+  color: var(--axis-primary);
+}
+
+.bg-axis {
+  background-color: var(--axis-primary);
+}
+
+.card {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.status-draft {
+  background: #e9ecef;
+  color: #495057;
+}
+
+.status-submitted {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.status-requested {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-modifying {
+  background: #ffedd5;
+  color: #9a3412;
+}
+
+.status-resubmitted {
+  background: #ede9fe;
+  color: #5b21b6;
+}
+
+.status-approved {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-rejected {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.btn-outline-primary {
+  --bs-btn-color: var(--axis-primary);
+  --bs-btn-border-color: var(--axis-primary);
+  --bs-btn-hover-bg: var(--axis-primary);
+  --bs-btn-hover-border-color: var(--axis-primary);
+  --bs-btn-active-bg: var(--axis-primary);
+  --bs-btn-active-border-color: var(--axis-primary);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--axis-primary);
+  box-shadow: 0 0 0 0.2rem rgba(151, 20, 77, 0.15);
+}
+
+.btn-outline-warning {
+  --bs-btn-color: #8a5700;
+  --bs-btn-border-color: #8a5700;
+  --bs-btn-hover-bg: #8a5700;
+  --bs-btn-hover-border-color: #8a5700;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-active-bg: #8a5700;
+  --bs-btn-active-color: #fff;
+}

@@ -1,0 +1,33 @@
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
+  background: #f5f6f8;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 440px;
+  border-radius: 16px;
+}
+
+.brand-logo {
+  display: inline-block;
+  background-color: var(--axis-primary);
+  color: white;
+  font-weight: 700;
+  letter-spacing: 1px;
+  border-radius: 6px;
+  padding: 10px 18px;
+}
+
+.form-check-input:checked {
+  background-color: var(--axis-primary);
+  border-color: var(--axis-primary);
+}
+
+.form-check-label {
+  cursor: pointer;
+}

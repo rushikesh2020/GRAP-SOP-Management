@@ -1,0 +1,148 @@
+<dialog #drawer class="activity-dialog" aria-labelledby="activityTitle" (close)="onClosed()">
+  <!-- Header -->
+  <header class="drawer-header">
+    <div class="d-flex justify-content-between align-items-center">
+      <h4 id="activityTitle" class="fw-bold mb-0">
+        <i class="bi bi-clock-history text-axis me-2" aria-hidden="true"></i>
+
+        SOP Activity
+      </h4>
+
+      <button
+        type="button"
+        class="btn-close"
+        aria-label="Close activity drawer"
+        autofocus
+        (click)="close()"
+      ></button>
+    </div>
+  </header>
+
+  @if (vm$ | async; as vm) {
+    <div class="drawer-body">
+      <!-- SOP summary -->
+      <section class="sop-summary mb-4">
+        <small class="text-muted">
+          {{ vm.sop.id }}
+        </small>
+
+        <h5 class="fw-semibold mt-1 mb-3">
+          {{ vm.sop.name }}
+        </h5>
+
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+          <span class="small text-muted"> Current version: v{{ vm.sop.version }} </span>
+
+          <span [class]="'status-badge ' + statusClasses[vm.sop.status]">
+            {{ vm.sop.status }}
+          </span>
+        </div>
+      </section>
+
+      <!-- Activity count -->
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h6 class="fw-semibold mb-0">Activity History</h6>
+
+        <small class="text-muted"> {{ vm.events.length }} event(s) · Latest first </small>
+      </div>
+
+      <!-- Timeline -->
+      <ol class="activity-timeline">
+        @for (event of vm.events; track event) {
+          <li class="timeline-entry">
+            <!-- Timeline icon -->
+            <div class="timeline-icon" [class]="'timeline-icon ' + statusClasses[event.newStatus]">
+              <i [class]="'bi ' + getActivityIcon(event.action)" aria-hidden="true"> </i>
+            </div>
+
+            <!-- Timeline content -->
+            <div class="timeline-content">
+              <!-- Action and version -->
+              <div class="d-flex justify-content-between align-items-start gap-2 mb-1">
+                <h6 class="fw-semibold mb-0">
+                  {{ event.action }}
+                </h6>
+
+                <span class="badge text-bg-light border"> v{{ event.version }} </span>
+              </div>
+
+              <!-- Timestamp -->
+              <div class="text-muted small mb-2">
+                <i class="bi bi-calendar3 me-1" aria-hidden="true"></i>
+
+                {{ event.timestamp | date: 'dd MMM yyyy, hh:mm a' : '+0530' }}
+              </div>
+
+              <!-- Employee -->
+              <div class="small fw-medium">
+                <i class="bi bi-person me-1" aria-hidden="true"></i>
+
+                {{ event.performedBy.name }}
+              </div>
+
+              <div class="small text-muted email-text">
+                {{ event.performedBy.email }}
+              </div>
+
+              <!-- Status transition -->
+              <div class="status-transition mt-3">
+                @if (event.previousStatus; as previous) {
+                  <span [class]="'status-badge ' + statusClasses[previous]">
+                    {{ previous }}
+                  </span>
+
+                  <i class="bi bi-arrow-right text-muted" aria-label="Changed to"></i>
+                }
+
+                <span [class]="'status-badge ' + statusClasses[event.newStatus]">
+                  {{ event.newStatus }}
+                </span>
+              </div>
+
+              <!-- Document version change -->
+              @if (event.previousVersion !== undefined && event.previousVersion !== event.version) {
+                <div class="version-change mt-2">
+                  <i class="bi bi-file-earmark-arrow-up me-1" aria-hidden="true"></i>
+
+                  File updated: v{{ event.previousVersion }} → v{{ event.version }}
+                </div>
+              }
+
+              <!-- Remarks and comments -->
+              @if (event.remarks) {
+                <div class="remarks-box mt-3">
+                  <div class="small fw-semibold mb-1">
+                    <i class="bi bi-chat-left-text me-1" aria-hidden="true"></i>
+
+                    Remarks / Comments
+                  </div>
+
+                  <div class="small remarks-text">
+                    {{ event.remarks }}
+                  </div>
+                </div>
+              }
+            </div>
+          </li>
+        } @empty {
+          <li class="text-center py-5">
+            <i class="bi bi-clock-history display-5 text-muted" aria-hidden="true"></i>
+
+            <p class="text-muted mt-3">No activity recorded yet.</p>
+          </li>
+        }
+      </ol>
+    </div>
+  } @else {
+    <div class="text-center p-5">
+      <i class="bi bi-inbox display-5 text-muted" aria-hidden="true"></i>
+
+      <p class="text-muted mt-3">SOP activity is unavailable.</p>
+    </div>
+  }
+
+  <!-- Footer -->
+  <footer class="drawer-footer">
+    <button type="button" class="btn btn-outline-secondary w-100" (click)="close()">Close</button>
+  </footer>
+</dialog>
