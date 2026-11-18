@@ -2,8 +2,6 @@ import { Component, Input, OnChanges, OnDestroy, ChangeDetectorRef, inject } fro
 
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
-import * as mammoth from 'mammoth';
-
 @Component({
   selector: 'app-document-preview',
   templateUrl: './document-preview.html',
@@ -55,7 +53,8 @@ export class DocumentPreviewComponent implements OnChanges, OnDestroy {
       if (extension === 'pdf') {
         this.pdfUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.downloadUrl);
       } else if (extension === 'docx') {
-        const arrayBuffer = await file.arrayBuffer();
+        // mammoth is large, so it is only downloaded when a Word file is previewed.
+        const [mammoth, arrayBuffer] = await Promise.all([import('mammoth'), file.arrayBuffer()]);
 
         const result = await mammoth.extractRawText({
           arrayBuffer,

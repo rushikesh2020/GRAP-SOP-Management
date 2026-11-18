@@ -8,10 +8,28 @@ export const MOCK_USERS: User[] = [
     role: 'Maker',
   },
   {
+    id: 'EMP004',
+    name: 'Rahul Mehta',
+    email: 'rahul.mehta@axisbank.com',
+    role: 'Maker',
+  },
+  {
     id: 'EMP002',
     name: 'Priya Singh',
     email: 'priya.singh@axisbank.com',
     role: 'Reviewer',
+  },
+  {
+    id: 'EMP005',
+    name: 'Kavita Rao',
+    email: 'kavita.rao@axisbank.com',
+    role: 'Reviewer',
+  },
+  {
+    id: 'EMP006',
+    name: 'Neha Kapoor',
+    email: 'neha.kapoor@axisbank.com',
+    role: 'Maker',
   },
   {
     id: 'EMP003',

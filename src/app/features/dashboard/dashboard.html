@@ -1,407 +1,373 @@
 @if (vm$ | async; as vm) {
   <app-header [user]="vm.user"></app-header>
 
-  <main class="container-fluid dashboard-container py-4">
-    <!-- Page heading -->
-    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
-      <div>
-        <h2 class="fw-bold mb-1">SOP Management</h2>
+  <main>
+    <!-- Hero band: greeting and the routing map of my SOPs -->
+    <section class="route-band">
+      <div class="app-container py-4">
+        <!-- Greeting and what needs attention -->
+        <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+          <div>
+            <h1 class="page-title">{{ greeting }}, {{ vm.firstName }}</h1>
 
-        <p class="text-muted mb-0">
-          Welcome, {{ vm.user.name }}. Manage your standard operating procedures.
-        </p>
-
-        @if (vm.needsChangesCount > 0) {
-          <small class="text-muted"> {{ vm.needsChangesCount }} SOP(s) need your changes. </small>
-        }
-      </div>
-
-      <a routerLink="/sop/add" class="btn btn-primary">
-        <i class="bi bi-plus-lg me-2" aria-hidden="true"></i>
-        Add SOP
-      </a>
-    </div>
-
-    @if (successMessage) {
-      <div class="alert alert-success d-flex align-items-center gap-2" role="status">
-        <i class="bi bi-check-circle-fill" aria-hidden="true"></i>
-
-        {{ successMessage }}
-
-        <button
-          type="button"
-          class="btn-close ms-auto"
-          aria-label="Dismiss message"
-          (click)="successMessage = ''"
-        ></button>
-      </div>
-    }
-
-    <!-- Summary cards -->
-    <div class="row g-3 mb-4">
-      <div class="col-6 col-lg-3">
-        <div class="card summary-card h-100 p-3">
-          <i class="bi bi-files summary-icon"></i>
-
-          <span class="text-muted small mt-2"> My SOPs </span>
-
-          <h2 class="fw-bold mb-0">{{ vm.myCount }}</h2>
-        </div>
-      </div>
-
-      <div class="col-6 col-lg-3">
-        <div class="card summary-card h-100 p-3">
-          <i class="bi bi-clipboard-check summary-icon"></i>
-
-          <span class="text-muted small mt-2">
-            {{ vm.isReviewer ? 'For My Review' : 'In Review' }}
-          </span>
-
-          <h2 class="fw-bold mb-0">
-            {{ vm.isReviewer ? vm.reviewCount : vm.submittedCount }}
-          </h2>
-        </div>
-      </div>
-
-      <div class="col-6 col-lg-3">
-        <div class="card summary-card h-100 p-3">
-          <i class="bi bi-file-earmark-text summary-icon"></i>
-
-          <span class="text-muted small mt-2"> My Drafts </span>
-
-          <h2 class="fw-bold mb-0">{{ vm.draftCount }}</h2>
-        </div>
-      </div>
-
-      <div class="col-6 col-lg-3">
-        <div class="card summary-card h-100 p-3">
-          <i class="bi bi-check-circle summary-icon"></i>
-
-          <span class="text-muted small mt-2">
-            {{ vm.isReviewer ? 'Approved by Me' : 'My Approved SOPs' }}
-          </span>
-
-          <h2 class="fw-bold mb-0">
-            {{ vm.isReviewer ? vm.approvedByMeCount : vm.approvedCount }}
-          </h2>
-        </div>
-      </div>
-    </div>
-
-    <!-- Action error -->
-    @if (actionError) {
-      <div class="alert alert-danger" role="alert">
-        {{ actionError }}
-      </div>
-    }
-
-    <!-- SOP listing card -->
-    <section class="card shadow-sm">
-      <div class="card-body p-3 p-md-4">
-        <!-- Role-based tabs -->
-        <nav class="nav nav-tabs sop-tabs mb-4" aria-label="SOP listings">
-          <button
-            type="button"
-            class="nav-link"
-            [class.active]="vm.tab === 'mine'"
-            [attr.aria-pressed]="vm.tab === 'mine'"
-            (click)="selectTab('mine')"
-          >
-            My SOPs
-
-            <span class="badge rounded-pill text-bg-light ms-1">
-              {{ vm.myCount }}
-            </span>
-          </button>
-
-          @if (vm.isReviewer) {
-            <button
-              type="button"
-              class="nav-link"
-              [class.active]="vm.tab === 'review'"
-              [attr.aria-pressed]="vm.tab === 'review'"
-              (click)="selectTab('review')"
-            >
-              For My Review
-
-              <span class="badge rounded-pill text-bg-light ms-1">
-                {{ vm.reviewCount }}
-              </span>
-            </button>
-          }
-        </nav>
-
-        <!-- Search -->
-        <div class="row mb-3">
-          <div class="col-md-6 col-lg-4">
-            <label for="sopSearch" class="form-label small"> Search SOPs </label>
-
-            <div class="input-group">
-              <span class="input-group-text bg-white">
-                <i class="bi bi-search" aria-hidden="true"></i>
-              </span>
-
-              <input
-                id="sopSearch"
-                type="search"
-                class="form-control"
-                placeholder="Search SOP name or ID"
-                [formControl]="searchControl"
-              />
-            </div>
-          </div>
-        </div>
-
-        <!-- Filters -->
-        <form [formGroup]="filterForm">
-          <div class="row g-3 mb-3 align-items-end">
-            <div class="col-6 col-lg-2">
-              <label for="category" class="form-label small"> Category </label>
-
-              <select
-                id="category"
-                class="form-select"
-                formControlName="category"
-                (change)="clearSubCategory()"
-              >
-                <option value="">All categories</option>
-
-                @for (category of categories; track category) {
-                  <option [value]="category">
-                    {{ category }}
-                  </option>
-                }
-              </select>
-            </div>
-
-            <div class="col-6 col-lg-2">
-              <label for="subCategory" class="form-label small"> Sub-category </label>
-
-              <select id="subCategory" class="form-select" formControlName="subCategory">
-                <option value="">All sub-categories</option>
-
-                @for (sub of vm.subCategories; track sub) {
-                  <option [value]="sub">{{ sub }}</option>
-                }
-              </select>
-            </div>
-
-            <div class="col-6 col-lg-2">
-              <label for="status" class="form-label small"> Status </label>
-
-              <select id="status" class="form-select" formControlName="status">
-                <option value="">All statuses</option>
-
-                @for (status of statuses; track status) {
-                  <option [value]="status">{{ status }}</option>
-                }
-              </select>
-            </div>
-
-            <div class="col-6 col-lg-2">
-              <label for="fromDate" class="form-label small"> Updated from </label>
-
-              <input
-                id="fromDate"
-                type="date"
-                class="form-control"
-                formControlName="fromDate"
-                [class.is-invalid]="vm.invalidDateRange"
-              />
-            </div>
-
-            <div class="col-6 col-lg-2">
-              <label for="toDate" class="form-label small"> Updated to </label>
-
-              <input
-                id="toDate"
-                type="date"
-                class="form-control"
-                formControlName="toDate"
-                [class.is-invalid]="vm.invalidDateRange"
-              />
-            </div>
-
-            <div class="col-6 col-lg-2">
-              <button
-                type="button"
-                class="btn btn-outline-secondary w-100"
-                (click)="clearFilters()"
-              >
-                <i class="bi bi-arrow-counterclockwise me-1" aria-hidden="true"></i>
-                Clear filters
-              </button>
-            </div>
-          </div>
-        </form>
-
-        @if (vm.invalidDateRange) {
-          <p class="text-danger small" role="alert">
-            The start date must not be after the end date.
-          </p>
-        }
-
-        <!-- Results count -->
-        <div class="text-muted small mb-3" aria-live="polite">
-          Showing {{ vm.rows.length }} of {{ vm.totalCount }} SOPs
-        </div>
-
-        <!-- SOP table -->
-        <div class="table-responsive">
-          <table class="table table-hover align-middle sop-table">
-            <caption class="visually-hidden">
-              Standard operating procedures
-            </caption>
-
-            <thead class="table-light">
-              <tr>
-                <th scope="col">SOP ID</th>
-                <th scope="col">SOP Name</th>
-                <th scope="col">Version</th>
-                <th scope="col">Category</th>
-                <th scope="col">Sub-category</th>
-                <th scope="col">Status</th>
-                <th scope="col">Uploaded By</th>
-                <th scope="col">Created Date</th>
-                <th scope="col">Last Updated</th>
-                <th scope="col">Actions</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              @for (sop of vm.rows; track sop.id) {
-                <tr>
-                  <td class="text-muted text-nowrap">
-                    {{ sop.id }}
-                  </td>
-
-                  <td class="fw-semibold sop-name">
-                    {{ sop.name }}
-                  </td>
-
-                  <td>v{{ sop.version }}</td>
-
-                  <td>{{ sop.category }}</td>
-
-                  <td>{{ sop.subCategory }}</td>
-
-                  <td>
-                    <span [class]="'status-badge ' + statusClasses[sop.status]">
-                      {{ sop.status }}
-                    </span>
-                  </td>
-
-                  <td>{{ sop.uploadedBy.name }}</td>
-
-                  <td class="text-nowrap">
-                    {{ sop.createdAt | date: 'dd MMM yyyy' : '+0530' }}
-                  </td>
-
-                  <td class="text-nowrap">
-                    {{ sop.updatedAt | date: 'dd MMM yyyy' : '+0530' }}
-                  </td>
-
-                  <td>
-                    <div class="d-flex gap-1 flex-wrap row-actions">
-                      <!-- Always available for listed SOPs -->
-                      <a
-                        class="btn btn-outline-secondary btn-sm"
-                        [routerLink]="['/sop', sop.id, 'view']"
-                        [attr.aria-label]="'View ' + sop.name"
-                      >
-                        <i class="bi bi-eye" aria-hidden="true"></i>
-                        View
-                      </a>
-
-                      <button
-                        type="button"
-                        class="btn btn-outline-secondary btn-sm"
-                        (click)="activityDrawer.open(sop.id)"
-                        [attr.aria-label]="'Activity for ' + sop.name"
-                      >
-                        <i class="bi bi-clock-history" aria-hidden="true"></i>
-                        Activity
-                      </button>
-
-                      <!-- Edit own draft or modification -->
-                      @if (canEdit(sop, vm.user)) {
-                        <a
-                          class="btn btn-outline-primary btn-sm"
-                          [routerLink]="['/sop', sop.id, 'edit']"
-                        >
-                          Edit
-                        </a>
-                      }
-
-                      <!-- Requested modification -->
-                      @if (canMakeChanges(sop, vm.user)) {
-                        <button
-                          class="btn btn-outline-warning btn-sm"
-                          type="button"
-                          (click)="makeChanges(sop, vm.user)"
-                        >
-                          Make changes
-                        </button>
-                      }
-
-                      <!-- Reviewer action -->
-                      @if (canReview(sop, vm.user)) {
-                        <a class="btn btn-primary btn-sm" [routerLink]="['/sop', sop.id, 'review']">
-                          Review
-                        </a>
-                      }
-                    </div>
-                  </td>
-                </tr>
-              } @empty {
-                <tr>
-                  <td colspan="10">
-                    <div class="text-center py-5">
-                      <i class="bi bi-inbox display-5 text-muted" aria-hidden="true"></i>
-
-                      <h5 class="mt-3">
-                        @if (vm.invalidDateRange) {
-                          Invalid date range
-                        } @else if (vm.totalCount > 0) {
-                          No matching SOPs
-                        } @else if (vm.tab === 'review') {
-                          No SOPs to review
-                        } @else {
-                          No SOPs yet
-                        }
-                      </h5>
-
-                      <p class="text-muted">
-                        @if (vm.invalidDateRange) {
-                          Correct the selected dates.
-                        } @else if (vm.totalCount > 0) {
-                          Try adjusting or clearing your filters.
-                        } @else if (vm.tab === 'review') {
-                          You are up to date with your reviews.
-                        } @else {
-                          Add an SOP to get started.
-                        }
-                      </p>
-
-                      @if (vm.totalCount === 0 && vm.tab === 'mine') {
-                        <a routerLink="/sop/add" class="btn btn-primary btn-sm"> Add SOP </a>
-                      } @else if (vm.totalCount > 0) {
-                        <button class="btn btn-outline-secondary btn-sm" (click)="clearFilters()">
-                          Clear filters
-                        </button>
-                      }
-                    </div>
-                  </td>
-                </tr>
+            <p class="action-summary">
+              @if (vm.actions.count > 0) {
+                <strong class="text-axis">{{ vm.actions.headline }}</strong>:
+                {{ vm.actions.details }}.
+              } @else {
+                You're all caught up.
               }
-            </tbody>
-          </table>
+              {{ vm.actions.drafts }}
+            </p>
+
+            <p class="user-meta">
+              {{ vm.user.role }}, employee ID <strong>{{ vm.user.id }}</strong>
+            </p>
+          </div>
+
+          <div class="d-flex flex-wrap gap-2">
+            @if (vm.continueSop; as draft) {
+              <a
+                class="btn btn-outline-secondary"
+                [routerLink]="['/sop', draft.id, 'edit']"
+                [attr.aria-label]="'Continue editing ' + draft.name"
+              >
+                <i class="bi bi-pencil me-2" aria-hidden="true"></i>
+                Continue editing
+              </a>
+            }
+
+            <a routerLink="/sop/add" class="btn btn-primary">
+              <i class="bi bi-plus-lg me-2" aria-hidden="true"></i>
+              Add SOP
+            </a>
+          </div>
         </div>
+
+        <app-route-map [map]="vm.route" [pipeline]="vm.pipeline" [queue]="vm.queue"></app-route-map>
       </div>
     </section>
 
-    <!-- Activity drawer -->
-    <!-- <dialog #activityDialog class="activity-dialog" aria-labelledby="activityTitle">
+    <div class="app-container py-4">
+      <!-- What is waiting on me, and what happened recently -->
+      <div class="row g-3 mb-3">
+        <div class="col-12 col-xl-7">
+          <app-needs-action
+            [items]="vm.actionItems"
+            (makeChanges)="makeChanges($event, vm.user)"
+          ></app-needs-action>
+        </div>
+
+        <div class="col-12 col-xl-5">
+          <app-recent-activity
+            [groups]="vm.recentActivity"
+            (openActivity)="activityDrawer.open($event)"
+          ></app-recent-activity>
+        </div>
+      </div>
+
+      <!-- SOP listing card -->
+      <section class="card">
+        <div class="card-body p-3">
+          <!-- Role-based tabs -->
+          <nav class="nav nav-tabs sop-tabs mb-3" aria-label="SOP listings">
+            <button
+              type="button"
+              class="nav-link"
+              [class.active]="vm.tab === 'mine'"
+              [attr.aria-pressed]="vm.tab === 'mine'"
+              (click)="selectTab('mine')"
+            >
+              My SOPs
+
+              <span class="badge rounded-pill text-bg-light ms-1">
+                {{ vm.myCount }}
+              </span>
+            </button>
+
+            @if (vm.isReviewer) {
+              <button
+                type="button"
+                class="nav-link"
+                [class.active]="vm.tab === 'review'"
+                [attr.aria-pressed]="vm.tab === 'review'"
+                (click)="selectTab('review')"
+              >
+                For My Review
+
+                <span class="badge rounded-pill text-bg-light ms-1">
+                  {{ vm.reviewCount }}
+                </span>
+              </button>
+            }
+          </nav>
+
+          <!-- Search and filters: one row on wide screens, wraps on smaller ones -->
+          <form [formGroup]="filterForm">
+            <div class="row g-2 mb-3 align-items-end filter-bar">
+              <div class="col-12 col-md-8 col-xl-3">
+                <label for="sopSearch" class="form-label"> Search SOPs </label>
+
+                <div class="input-group">
+                  <span class="input-group-text">
+                    <i class="bi bi-search" aria-hidden="true"></i>
+                  </span>
+
+                  <input
+                    id="sopSearch"
+                    type="search"
+                    class="form-control"
+                    placeholder="Search SOP name or ID"
+                    [formControl]="searchControl"
+                  />
+                </div>
+              </div>
+
+              <div class="col-6 col-md-4 col-xl">
+                <label for="category" class="form-label"> Category </label>
+
+                <select
+                  id="category"
+                  class="form-select"
+                  formControlName="category"
+                  (change)="clearSubCategory()"
+                >
+                  <option value="">All</option>
+
+                  @for (category of categories; track category) {
+                    <option [value]="category">
+                      {{ category }}
+                    </option>
+                  }
+                </select>
+              </div>
+
+              <div class="col-6 col-md-4 col-xl">
+                <label for="subCategory" class="form-label"> Sub-category </label>
+
+                <select id="subCategory" class="form-select" formControlName="subCategory">
+                  <option value="">All</option>
+
+                  @for (sub of vm.subCategories; track sub) {
+                    <option [value]="sub">{{ sub }}</option>
+                  }
+                </select>
+              </div>
+
+              <div class="col-6 col-md-4 col-xl">
+                <label for="status" class="form-label"> Status </label>
+
+                <select id="status" class="form-select" formControlName="status">
+                  <option value="">All</option>
+
+                  @for (status of statuses; track status) {
+                    <option [value]="status">{{ status }}</option>
+                  }
+                </select>
+              </div>
+
+              <!-- One field for the "last updated" range; writes to fromDate / toDate -->
+              <div class="col-12 col-md-8 col-xl-3">
+                <span id="dateRangeLabel" class="form-label d-block">Last updated</span>
+
+                <app-date-range
+                  labelId="dateRangeLabel"
+                  [fromControl]="filterForm.controls.fromDate"
+                  [toControl]="filterForm.controls.toDate"
+                ></app-date-range>
+              </div>
+
+              <div class="col-6 col-md-4 col-xl-auto">
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary w-100"
+                  (click)="clearFilters()"
+                >
+                  <i class="bi bi-arrow-counterclockwise me-1" aria-hidden="true"></i>
+                  Clear filters
+                </button>
+              </div>
+            </div>
+          </form>
+
+          @if (vm.invalidDateRange) {
+            <p class="text-danger small" role="alert">
+              The start date must not be after the end date.
+            </p>
+          }
+
+          <!-- Results count -->
+          <div class="text-muted small mb-3" aria-live="polite">
+            Showing {{ vm.rows.length }} of {{ vm.totalCount }} SOPs.
+
+            @if (vm.actions.count > 0) {
+              <span class="legend-needs-you">Highlighted rows are waiting on you.</span>
+            }
+          </div>
+
+          <!-- SOP table -->
+          <div class="table-responsive sop-table-wrap">
+            <table class="table table-hover align-middle mb-0 sop-table">
+              <caption class="visually-hidden">
+                Standard operating procedures
+              </caption>
+
+              <thead>
+                <tr>
+                  <th scope="col">SOP ID</th>
+                  <th scope="col">SOP name</th>
+                  <th scope="col">Version</th>
+                  <th scope="col">Category</th>
+                  <th scope="col">Sub-category</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Uploaded by</th>
+                  <th scope="col">Created date</th>
+                  <th scope="col">Last updated</th>
+                  <th scope="col" class="text-end">Actions</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                @for (sop of vm.rows; track sop.id) {
+                  <tr [class.needs-you]="needsAction(sop, vm.user)">
+                    <td class="sop-id">
+                      {{ sop.id }}
+                    </td>
+
+                    <td class="sop-name">
+                      {{ sop.name }}
+                    </td>
+
+                    <td>
+                      <span class="version-pill">v{{ sop.version }}</span>
+                    </td>
+
+                    <td>{{ sop.category }}</td>
+
+                    <td>{{ sop.subCategory }}</td>
+
+                    <td>
+                      <span [class]="'status-badge ' + statusClasses[sop.status]">
+                        {{ sop.status }}
+                      </span>
+
+                      @if (waitingDays(sop); as days) {
+                        <span class="status-age"
+                          >for {{ days }} {{ days === 1 ? 'day' : 'days' }}</span
+                        >
+                      }
+                    </td>
+
+                    <td class="text-nowrap">{{ sop.uploadedBy.name }}</td>
+
+                    <td class="sop-date">
+                      {{ sop.createdAt | date: 'dd MMM yyyy' : '+0530' }}
+                    </td>
+
+                    <td class="sop-date">
+                      {{ sop.updatedAt | date: 'dd MMM yyyy' : '+0530' }}
+                    </td>
+
+                    <td>
+                      <div class="row-actions">
+                        <a
+                          class="btn btn-icon"
+                          [routerLink]="['/sop', sop.id, 'view']"
+                          [attr.aria-label]="'View ' + sop.name"
+                          title="View"
+                        >
+                          <i class="bi bi-eye" aria-hidden="true"></i>
+                        </a>
+
+                        <button
+                          type="button"
+                          class="btn btn-icon"
+                          (click)="activityDrawer.open(sop.id)"
+                          [attr.aria-label]="'Activity for ' + sop.name"
+                          title="Activity"
+                        >
+                          <i class="bi bi-clock-history" aria-hidden="true"></i>
+                        </button>
+
+                        <!-- Main action: icon like the others; filled when it is waiting on you -->
+                        @if (rowAction(sop, vm.user); as action) {
+                          @if (action.link) {
+                            <a
+                              class="btn btn-icon"
+                              [class.is-needs-you]="action.needsYou"
+                              [class.is-mine]="!action.needsYou"
+                              [routerLink]="action.link"
+                              [attr.aria-label]="action.label + ' ' + sop.name"
+                              [title]="action.label"
+                            >
+                              <i [class]="'bi ' + action.icon" aria-hidden="true"></i>
+                            </a>
+                          } @else {
+                            <button
+                              type="button"
+                              class="btn btn-icon is-needs-you"
+                              (click)="makeChanges(sop, vm.user)"
+                              [attr.aria-label]="action.label + ' ' + sop.name"
+                              [title]="action.label"
+                            >
+                              <i [class]="'bi ' + action.icon" aria-hidden="true"></i>
+                            </button>
+                          }
+                        } @else {
+                          <span class="action-slot" aria-hidden="true"></span>
+                        }
+                      </div>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="10">
+                      <div class="text-center py-5">
+                        <i class="bi bi-inbox display-5 text-muted" aria-hidden="true"></i>
+
+                        <h5 class="mt-3">
+                          @if (vm.invalidDateRange) {
+                            Invalid date range
+                          } @else if (vm.totalCount > 0) {
+                            No matching SOPs
+                          } @else if (vm.tab === 'review') {
+                            No SOPs to review
+                          } @else {
+                            No SOPs yet
+                          }
+                        </h5>
+
+                        <p class="text-muted">
+                          @if (vm.invalidDateRange) {
+                            Correct the selected dates.
+                          } @else if (vm.totalCount > 0) {
+                            Try adjusting or clearing your filters.
+                          } @else if (vm.tab === 'review') {
+                            You are up to date with your reviews.
+                          } @else {
+                            Add an SOP to get started.
+                          }
+                        </p>
+
+                        @if (vm.totalCount === 0 && vm.tab === 'mine') {
+                          <a routerLink="/sop/add" class="btn btn-primary btn-sm"> Add SOP </a>
+                        } @else if (vm.totalCount > 0) {
+                          <button class="btn btn-outline-secondary btn-sm" (click)="clearFilters()">
+                            Clear filters
+                          </button>
+                        }
+                      </div>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Activity drawer -->
+      <!-- <dialog #activityDialog class="activity-dialog" aria-labelledby="activityTitle">
       <div class="d-flex justify-content-between align-items-center mb-3">
         <h4 id="activityTitle" class="mb-0">SOP Activity</h4>
 
@@ -453,7 +419,8 @@
         }
       }
     </dialog> -->
-    <app-activity #activityDrawer></app-activity>
+      <app-activity #activityDrawer></app-activity>
+    </div>
   </main>
 } @else {
   <div class="d-flex justify-content-center p-5" role="status">

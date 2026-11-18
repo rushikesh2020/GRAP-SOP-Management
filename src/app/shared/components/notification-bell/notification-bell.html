@@ -1,0 +1,71 @@
+@let items = (items$ | async) ?? [];
+@let unread = (unreadCount$ | async) ?? 0;
+
+<button
+  #bellButton
+  type="button"
+  class="bell"
+  [class.is-open]="open"
+  (click)="toggle()"
+  [attr.aria-expanded]="open"
+  aria-controls="notificationsPanel"
+  [attr.aria-label]="unread ? 'Notifications, ' + unread + ' unread' : 'Notifications'"
+>
+  <i class="bi bi-bell" aria-hidden="true"></i>
+
+  @if (unread) {
+    <span class="count" aria-hidden="true">{{ unread > 9 ? '9+' : unread }}</span>
+  }
+</button>
+
+@if (open) {
+  <section id="notificationsPanel" class="panel" aria-labelledby="notificationsTitle">
+    <header class="panel-head">
+      <h2 id="notificationsTitle" class="panel-title">Notifications</h2>
+
+      @if (unread) {
+        <button type="button" class="mark-all" (click)="markAllRead(items)">Mark all as read</button>
+      }
+    </header>
+
+    <ul class="list">
+      @for (item of items; track item.id) {
+        <li>
+          <a
+            class="item"
+            [class.unread]="item.unread"
+            [routerLink]="item.link"
+            (click)="openItem(item)"
+          >
+            <span [class]="'kind kind-' + item.kind" aria-hidden="true">
+              <i [class]="'bi ' + icons[item.kind]"></i>
+            </span>
+
+            <span class="body">
+              <span class="text">
+                <strong>{{ item.actor }}</strong> {{ item.verb }}
+                <strong>{{ item.sopName }}</strong>{{ item.suffix }}
+              </span>
+
+              @if (item.remarks) {
+                <span class="remarks">{{ item.remarks }}</span>
+              }
+
+              <time class="time" [attr.datetime]="item.timestamp">
+                {{ item.timestamp | date: 'dd MMM, h:mm a' : '+0530' }}
+              </time>
+            </span>
+
+            @if (item.unread) {
+              <span class="dot"><span class="visually-hidden">Unread</span></span>
+            }
+          </a>
+        </li>
+      } @empty {
+        <li class="empty">
+          No notifications yet. Review requests and decisions on your SOPs will show up here.
+        </li>
+      }
+    </ul>
+  </section>
+}

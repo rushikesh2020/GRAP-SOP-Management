@@ -9,31 +9,28 @@
     <p class="text-muted mt-3">Loading SOP...</p>
   </div>
 } @else {
-  <main class="container-fluid form-container py-4">
-    <!-- Page heading -->
-    <div class="d-flex align-items-center gap-3 mb-4">
-      <button
-        type="button"
-        class="btn btn-outline-secondary"
-        [disabled]="saving"
-        (click)="cancel()"
-        aria-label="Back to dashboard"
-      >
-        <i class="bi bi-arrow-left"></i>
+  <main class="app-container py-4">
+    <!-- Page heading: stays under the header while scrolling -->
+    <div class="page-head">
+      <button type="button" class="back-link" [disabled]="saving" (click)="cancel()">
+        <i class="bi bi-arrow-left" aria-hidden="true"></i>
+        {{ backTarget.label }}
       </button>
 
       <div>
-        <h2 class="fw-bold mb-1">
-          {{ existingSop ? 'Edit SOP' : 'Add SOP' }}
-        </h2>
+        <div>
+          <h1 class="page-title">
+            {{ existingSop ? 'Edit SOP' : 'Add SOP' }}
+          </h1>
 
-        <p class="text-muted mb-0">
-          @if (existingSop) {
-            {{ existingSop.id }} · Version {{ existingSop.version }}
-          } @else {
-            Upload a document and enter the SOP details.
-          }
-        </p>
+          <p class="text-muted mb-0">
+            @if (existingSop) {
+              {{ existingSop.id }}, version {{ existingSop.version }}
+            } @else {
+              Upload a document and enter the SOP details.
+            }
+          </p>
+        </div>
       </div>
     </div>
 
@@ -52,10 +49,10 @@
       </div>
     }
 
-    <!-- Save error -->
-    @if (saveError) {
+    <!-- Load error -->
+    @if (loadError) {
       <div class="alert alert-danger" role="alert">
-        {{ saveError }}
+        {{ loadError }}
       </div>
     }
 
@@ -134,7 +131,7 @@
                     {{ fileName ? 'Replace file' : 'Choose file' }}
                   </button>
 
-                  <div class="small text-muted mt-3">PDF, DOC, DOCX · Maximum 10 MB</div>
+                  <div class="small text-muted mt-3">PDF, DOC or DOCX, up to 10 MB</div>
                 </div>
 
                 <!-- File validation errors -->

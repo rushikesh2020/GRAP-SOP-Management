@@ -1,0 +1,117 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+/* Long lists scroll inside the card; the heading stays put. */
+.card-body {
+  display: flex;
+  flex-direction: column;
+  max-height: 520px;
+}
+
+.scroll-area {
+  flex: 1;
+  min-height: 0;
+  margin-right: -8px;
+  padding-right: 8px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.group-title {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--axis-text-muted);
+}
+
+.feed {
+  margin: 0 0 16px;
+  padding: 0;
+  list-style: none;
+}
+
+.feed:last-child {
+  margin-bottom: 0;
+}
+
+.feed-item {
+  display: flex;
+  gap: 10px;
+  padding: 6px 0;
+}
+
+.avatar {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* All five pass white-text contrast. */
+.tone-0 {
+  background: #97144d;
+}
+
+.tone-1 {
+  background: #7c3aed;
+}
+
+.tone-2 {
+  background: #0f766e;
+}
+
+.tone-3 {
+  background: #c2410c;
+}
+
+.tone-4 {
+  background: #1d4ed8;
+}
+
+.feed-body {
+  min-width: 0;
+}
+
+.feed-text {
+  margin: 0;
+  font-size: 13px;
+  color: var(--axis-text);
+}
+
+/* Looks like text, behaves like a button (opens the activity drawer). */
+.sop-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-weight: 600;
+  color: var(--axis-text);
+  text-align: left;
+}
+
+.sop-link:hover,
+.sop-link:focus-visible {
+  color: var(--axis-primary);
+  text-decoration: underline;
+}
+
+.feed-remarks {
+  margin: 4px 0 0;
+  padding-left: 8px;
+  border-left: 2px solid var(--axis-border);
+  font-size: 12px;
+  color: var(--axis-text-muted);
+}
+
+.feed-time {
+  display: block;
+  margin-top: 2px;
+  font-size: 11px;
+  color: var(--axis-text-muted);
+}

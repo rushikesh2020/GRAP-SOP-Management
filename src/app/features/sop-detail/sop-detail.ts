@@ -11,6 +11,8 @@ import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 import { SopService } from '../../core/services/sop.service';
 import { DocumentService } from '../../core/services/document.service';
+import { NotificationService } from '../../core/services/notification.service';
+import { BackNavigationService } from '../../core/services/back-navigation.service';
 
 import { User } from '../../models/user.model';
 
@@ -41,6 +43,7 @@ export class SopDetailComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly sopService = inject(SopService);
   private readonly documentService = inject(DocumentService);
+  private readonly notificationService = inject(NotificationService);
 
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
@@ -50,6 +53,11 @@ export class SopDetailComponent implements OnInit {
 
   readonly mode: 'view' | 'review' =
     this.route.snapshot.data['mode'] === 'review' ? 'review' : 'view';
+
+  // Where "Back" goes: the page the user came from, else the matching dashboard tab.
+  readonly backTarget = inject(BackNavigationService).backTarget(
+    this.mode === 'review' ? 'review' : 'mine',
+  );
 
   user: User | null = null;
   sop: Sop | null = null;
@@ -61,7 +69,6 @@ export class SopDetailComponent implements OnInit {
 
   loadError = '';
   documentError = '';
-  actionError = '';
 
   pendingDecision: ReviewDecision | null = null;
 
@@ -162,11 +169,9 @@ export class SopDetailComponent implements OnInit {
       return;
     }
 
-    this.actionError = '';
-
     // Do not approve a document that could not be retrieved.
     if (decision === 'Approved' && !this.previewBlob) {
-      this.actionError = 'The document must be available before approval.';
+      this.notificationService.error('The document must be available before approval.');
       return;
     }
 
@@ -202,7 +207,6 @@ export class SopDetailComponent implements OnInit {
     }
 
     this.saving = true;
-    this.actionError = '';
 
     dialog.close();
     this.pendingDecision = null;
@@ -216,8 +220,9 @@ export class SopDetailComponent implements OnInit {
       );
 
       if (!updatedSop) {
-        this.actionError =
-          'Unable to save the review decision. The SOP may have already been updated.';
+        this.notificationService.error(
+          'Unable to save the review decision. The SOP may have already been updated.',
+        );
 
         return;
       }
@@ -242,22 +247,19 @@ export class SopDetailComponent implements OnInit {
           break;
       }
 
-      try {
-        sessionStorage.setItem('grap-success', message);
-      } catch {
-        // The decision has already been persisted.
-      }
+      this.notificationService.success(message);
 
       try {
         const navigated = await this.router.navigate(['/dashboard'], {
           queryParams: { tab: 'review' },
         });
 
+        // The decision is saved, so this is a warning, not an error.
         if (!navigated) {
-          this.actionError = 'Decision saved. Please return to the dashboard.';
+          this.notificationService.warning('Decision saved. Please return to the dashboard.');
         }
       } catch {
-        this.actionError = 'Decision saved. Please return to the dashboard.';
+        this.notificationService.warning('Decision saved. Please return to the dashboard.');
       }
     } finally {
       this.saving = false;
@@ -275,13 +277,6 @@ export class SopDetailComponent implements OnInit {
       return;
     }
 
-    const fromReviewQueue =
-      this.user?.role === 'Reviewer' && this.sop && this.sop.uploadedBy.id !== this.user.id;
-
-    this.router.navigate(['/dashboard'], {
-      queryParams: {
-        tab: fromReviewQueue ? 'review' : 'mine',
-      },
-    });
+    this.router.navigateByUrl(this.backTarget.url);
   }
 }

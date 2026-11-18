@@ -1,10 +1,10 @@
 .grap-toast-container {
   position: fixed;
-  top: 85px;
+  top: calc(var(--app-header-height) + 16px);
   right: 20px;
   z-index: 1090;
   width: min(360px, calc(100vw - 40px));
-  max-height: calc(100dvh - 105px);
+  max-height: calc(100dvh - var(--app-header-height) - 32px);
   overflow-y: auto;
   pointer-events: none;
 }
@@ -13,19 +13,19 @@
   width: 100%;
   opacity: 1;
   border-radius: 8px;
-  background: #fff;
-  border: 1px solid #e5e7eb;
+  background: var(--axis-surface);
+  border: 1px solid var(--axis-border);
   border-left-width: 4px;
   pointer-events: auto;
   animation: toast-in 0.2s ease-out;
 }
 
 .toast-header {
-  background: #fff;
+  background: var(--axis-surface);
 }
 
 .toast-body {
-  color: #212529;
+  color: var(--axis-text);
   font-size: 14px;
   overflow-wrap: anywhere;
 }

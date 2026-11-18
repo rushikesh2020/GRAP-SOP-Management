@@ -43,7 +43,7 @@
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h6 class="fw-semibold mb-0">Activity History</h6>
 
-        <small class="text-muted"> {{ vm.events.length }} event(s) · Latest first </small>
+        <small class="text-muted"> {{ vm.events.length }} {{ vm.events.length === 1 ? 'event' : 'events' }}, newest first </small>
       </div>
 
       <!-- Timeline -->

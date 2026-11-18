@@ -1,0 +1,108 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+/* Long lists scroll inside the card; the heading stays put. */
+.card-body {
+  display: flex;
+  flex-direction: column;
+  max-height: 520px;
+}
+
+.scroll-area {
+  flex: 1;
+  min-height: 0;
+  margin-right: -8px;
+  padding-right: 8px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.count-pill {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: var(--axis-primary-subtle);
+  color: var(--axis-primary);
+  font-size: 12px;
+  line-height: 20px;
+  vertical-align: middle;
+}
+
+.action-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Coloured left edge shows what kind of action it is. */
+.action-item {
+  padding: 12px 14px;
+  border: 1px solid var(--axis-border);
+  border-left: 3px solid var(--status-changes-solid);
+  border-radius: 8px;
+}
+
+.action-item.kind-review {
+  border-left-color: var(--status-review-solid);
+}
+
+.action-title {
+  margin-right: 8px;
+  font-weight: 600;
+  color: var(--axis-text);
+}
+
+.action-meta {
+  font-size: 12px;
+  color: var(--axis-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.waiting {
+  font-size: 12px;
+  color: var(--axis-text-muted);
+  white-space: nowrap;
+}
+
+.waiting-late {
+  color: #b45309;
+  font-weight: 600;
+}
+
+.note {
+  flex: 1 1 260px;
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: var(--axis-surface-muted);
+  font-size: 13px;
+  color: var(--axis-text);
+}
+
+.note-author {
+  margin-right: 6px;
+  font-weight: 600;
+}
+
+.note-empty {
+  color: var(--axis-text-muted);
+}
+
+.empty {
+  padding: 24px 0;
+  text-align: center;
+  color: var(--axis-text-muted);
+}
+
+.empty .bi {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 28px;
+  color: var(--status-approved-solid);
+}

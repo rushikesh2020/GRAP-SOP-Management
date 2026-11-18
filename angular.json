@@ -29,7 +29,16 @@
               "node_modules/bootstrap-icons/font/bootstrap-icons.css",
               "src/styles.css"
             ],
-            "allowedCommonJsDependencies": ["mammoth"]
+            "allowedCommonJsDependencies": [
+              "mammoth",
+              "lop",
+              "base64-js",
+              "jszip",
+              "dingbat-to-unicode",
+              "xmlbuilder",
+              "@xmldom/xmldom",
+              "@xmldom/xmldom/lib/dom"
+            ]
           },
           "configurations": {
             "production": {

@@ -1,22 +1,25 @@
-.dashboard-container {
-  max-width: 1600px;
-  margin: 0 auto;
-  padding-left: 24px;
-  padding-right: 24px;
+/* Page heading */
+
+.action-summary {
+  margin: 0 0 2px;
+  font-size: 14px;
+  color: var(--axis-text);
 }
 
-.summary-card {
-  border-left: 4px solid var(--axis-primary);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+.user-meta {
+  margin: 0;
+  font-size: 12px;
+  color: var(--axis-text-muted);
 }
 
-.summary-icon {
-  color: var(--axis-primary);
-  font-size: 24px;
+/* Full-width white band that holds the greeting and the routing map */
+.route-band {
+  background: var(--axis-surface);
+  border-bottom: 1px solid var(--axis-border);
 }
 
 .sop-tabs .nav-link {
-  color: #6c757d;
+  color: var(--axis-text-muted);
   border: none;
   border-radius: 0;
   border-bottom: 3px solid transparent;
@@ -30,30 +33,177 @@
   font-weight: 600;
 }
 
-.sop-table {
-  font-size: 13px;
+/* The active tab's count picks up the brand tint. */
+.sop-tabs .nav-link.active .badge {
+  background-color: var(--axis-primary-subtle) !important;
+  color: var(--axis-primary) !important;
 }
 
-.sop-table th {
-  white-space: nowrap;
+/* Search + filters bar */
+.filter-bar .form-label {
+  margin-bottom: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--axis-text-muted);
+}
+
+.filter-bar .input-group-text {
+  background-color: var(--axis-surface);
+  color: var(--axis-text-muted);
+}
+
+/* SOP table */
+.sop-table-wrap {
+  border: 1px solid var(--axis-border);
+  border-radius: 8px;
+  overflow-y: hidden; /* a 1px border rounding made a needless vertical scrollbar */
+}
+
+.sop-table {
+  --bs-table-bg: var(--axis-surface);
+  --bs-table-border-color: var(--axis-border);
+  --bs-table-hover-bg: rgba(var(--axis-primary-rgb), 0.035);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums; /* digits line up in columns */
+}
+
+.sop-table thead th {
+  background-color: var(--axis-surface-muted);
+  color: var(--axis-text-muted);
+  font-size: 12px;
   font-weight: 600;
-  padding: 14px 10px;
+  white-space: nowrap;
+  padding: 10px 12px;
 }
 
 .sop-table td {
-  padding: 15px 10px;
+  padding: 12px;
+}
+
+.sop-table th:first-child,
+.sop-table td:first-child {
+  padding-left: 16px;
+}
+
+.sop-table th:last-child,
+.sop-table td:last-child {
+  padding-right: 16px;
+}
+
+/* Waiting on the signed-in user: faint tint and a burgundy left edge.
+   Bootstrap draws hover with an inset box-shadow on each cell, so keep that layer too. */
+.sop-table tbody tr.needs-you {
+  --bs-table-bg: #fdf6f9;
+}
+
+.sop-table tbody tr.needs-you td:first-child {
+  box-shadow:
+    inset 3px 0 0 var(--axis-primary),
+    inset 0 0 0 9999px var(--bs-table-bg-state, transparent);
+}
+
+.legend-needs-you {
+  padding-left: 10px;
+  border-left: 3px solid var(--axis-primary);
+  margin-left: 6px;
+}
+
+.status-age {
+  display: block;
+  margin-top: 3px;
+  font-size: 11px;
+  color: var(--axis-text-muted);
+  white-space: nowrap;
+}
+
+/* The wrapper already draws the bottom edge. */
+.sop-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.sop-id {
+  color: var(--axis-text-muted);
+  font-weight: 500;
+  white-space: nowrap;
 }
 
 .sop-name {
-  min-width: 180px;
+  min-width: 200px;
+  font-weight: 600;
+  color: var(--axis-text);
 }
 
+.sop-date {
+  color: var(--axis-text-muted);
+  white-space: nowrap;
+}
+
+.version-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border: 1px solid var(--axis-border);
+  border-radius: 999px;
+  background: var(--axis-surface-muted);
+  color: var(--axis-text-muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* Row actions */
 .row-actions {
-  min-width: 180px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
 }
 
-.row-actions .btn {
-  font-size: 12px;
+/* Square icon button, same height as .btn-sm */
+.btn-icon {
+  --bs-btn-color: var(--axis-text-muted);
+  --bs-btn-bg: var(--axis-surface);
+  --bs-btn-border-color: var(--axis-border);
+  --bs-btn-hover-color: var(--axis-primary);
+  --bs-btn-hover-bg: var(--axis-primary-subtle);
+  --bs-btn-hover-border-color: var(--axis-primary-border);
+  --bs-btn-active-color: var(--axis-primary);
+  --bs-btn-active-bg: var(--axis-primary-subtle);
+  --bs-btn-active-border-color: var(--axis-primary-border);
+  --bs-btn-focus-shadow-rgb: var(--axis-primary-rgb);
+  --bs-btn-padding-x: 0;
+  --bs-btn-padding-y: 0;
+  --bs-btn-border-radius: 6px;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+/* Main action, waiting on you: filled brand colour. */
+.btn-icon.is-needs-you {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: var(--axis-primary);
+  --bs-btn-border-color: var(--axis-primary);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: var(--axis-primary-dark);
+  --bs-btn-hover-border-color: var(--axis-primary-dark);
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: var(--axis-primary-dark);
+  --bs-btn-active-border-color: var(--axis-primary-dark);
+}
+
+/* Main action, nobody waiting (your own draft): brand outline. */
+.btn-icon.is-mine {
+  --bs-btn-color: var(--axis-primary);
+  --bs-btn-border-color: var(--axis-primary-border);
+}
+
+/* Keeps the icons aligned in rows that have no main action. */
+.action-slot {
+  display: inline-block;
+  width: 28px;
 }
 
 /* Activity side drawer */
@@ -76,11 +226,6 @@
 } */
 
 @media (max-width: 768px) {
-  .dashboard-container {
-    padding-left: 12px;
-    padding-right: 12px;
-  }
-
   .sop-tabs .nav-link {
     padding: 10px;
   }

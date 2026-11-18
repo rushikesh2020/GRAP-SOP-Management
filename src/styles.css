@@ -1,25 +1,140 @@
-/* You can add global styles to this file, and also import other style files */
+/* Design tokens: the single source for brand colours, fonts and layout. */
 :root {
+  /* Brand */
   --axis-primary: #97144d;
   --axis-primary-dark: #760e3c;
+  --axis-primary-rgb: 151, 20, 77;
+  --axis-primary-subtle: #fbf0f5;
+  --axis-primary-border: #e9c3d4;
+
+  /* Neutrals */
   --axis-background: #f5f6f8;
-  --axis-text: #212529;
+  --axis-surface: #ffffff;
+  --axis-surface-muted: #f8f9fb;
+  --axis-border: #e5e7eb;
+  --axis-text: #1f2937;
+  --axis-text-muted: #6b7280;
+
+  /* Solid status colours for dots and bars (badges use the tinted pairs below). */
+  --status-draft-solid: #9ca3af;
+  --status-review-solid: #3b82f6;
+  --status-changes-solid: #f59e0b;
+  --status-approved-solid: #16a34a;
+  --status-rejected-solid: #dc2626;
+
+  /* Type */
+  --axis-font: 'Instrument Sans', 'Segoe UI', system-ui, -apple-system, Arial, sans-serif;
+  /* Narrower cut of the same family for headings and station names. */
+  --axis-stretch-display: semi-condensed;
+
+  /* Layout */
+  --app-header-height: 60px;
+  --axis-radius: 10px;
+  --axis-shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05);
+
+  /* Feed the tokens into Bootstrap, so its components follow the brand. */
+  --bs-primary: var(--axis-primary);
+  --bs-primary-rgb: var(--axis-primary-rgb);
+  --bs-primary-bg-subtle: var(--axis-primary-subtle);
+  --bs-primary-border-subtle: var(--axis-primary-border);
+  --bs-primary-text-emphasis: var(--axis-primary-dark);
+  --bs-link-color: var(--axis-primary);
+  --bs-link-color-rgb: var(--axis-primary-rgb);
+  --bs-link-hover-color: var(--axis-primary-dark);
+  --bs-link-hover-color-rgb: 118, 14, 60;
+  --bs-focus-ring-color: rgba(var(--axis-primary-rgb), 0.25);
+  --bs-body-font-family: var(--axis-font);
+  --bs-body-color: var(--axis-text);
+  --bs-body-bg: var(--axis-background);
+  --bs-secondary-color: var(--axis-text-muted);
+  --bs-border-color: var(--axis-border);
+
+  /* Native controls (checkboxes, date picker) use the brand colour. */
+  accent-color: var(--axis-primary);
 }
 
 body {
-  margin: 0;
-  font-family: 'Segoe UI', Arial, sans-serif;
-  background-color: var(--axis-background);
-  color: var(--axis-text);
+  -webkit-font-smoothing: antialiased;
 }
 
-.btn-primary {
-  --bs-btn-bg: var(--axis-primary);
-  --bs-btn-border-color: var(--axis-primary);
-  --bs-btn-hover-bg: var(--axis-primary-dark);
-  --bs-btn-hover-border-color: var(--axis-primary-dark);
-  --bs-btn-active-bg: var(--axis-primary-dark);
-  --bs-btn-active-border-color: var(--axis-primary-dark);
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--axis-text);
+  font-stretch: var(--axis-stretch-display);
+}
+
+/* One page width for every screen, aligned with the header. */
+.app-container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+@media (max-width: 768px) {
+  .app-container {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+}
+
+/* Page heading, shared by the dashboard, SOP form and SOP detail pages */
+.page-title {
+  margin-bottom: 2px;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+/* Back link, title and page actions; pinned under the header while scrolling. */
+.page-head {
+  position: sticky;
+  top: var(--app-header-height);
+  z-index: 1010;
+  margin: -24px -24px 24px;
+  padding: 16px 24px 14px;
+  background: var(--axis-background);
+  /* Hairline so scrolled content does not run into the title. */
+  border-bottom: 1px solid var(--axis-border);
+}
+
+@media (max-width: 768px) {
+  .page-head {
+    margin: -24px -12px 24px;
+    padding: 12px;
+  }
+}
+
+/* "Back to ..." link above a page title */
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+  padding: 2px 0;
+  border: 0;
+  background: none;
+  color: var(--axis-primary);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.back-link:hover:not(:disabled) {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.back-link:focus-visible {
+  outline: 2px solid var(--axis-primary);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.back-link:disabled {
+  opacity: 0.5;
 }
 
 .text-axis {
@@ -31,17 +146,172 @@ body {
 }
 
 .card {
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
+  border: 1px solid var(--axis-border);
+  border-radius: var(--axis-radius);
+  box-shadow: var(--axis-shadow-sm);
 }
 
+/* Heading inside a card, e.g. "Your SOP pipeline" */
+.section-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* Buttons */
+.btn-primary {
+  --bs-btn-bg: var(--axis-primary);
+  --bs-btn-border-color: var(--axis-primary);
+  --bs-btn-hover-bg: var(--axis-primary-dark);
+  --bs-btn-hover-border-color: var(--axis-primary-dark);
+  --bs-btn-active-bg: var(--axis-primary-dark);
+  --bs-btn-active-border-color: var(--axis-primary-dark);
+  --bs-btn-disabled-bg: var(--axis-primary);
+  --bs-btn-disabled-border-color: var(--axis-primary);
+  --bs-btn-focus-shadow-rgb: var(--axis-primary-rgb);
+}
+
+.btn-outline-primary {
+  --bs-btn-color: var(--axis-primary);
+  --bs-btn-border-color: var(--axis-primary);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: var(--axis-primary);
+  --bs-btn-hover-border-color: var(--axis-primary);
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: var(--axis-primary);
+  --bs-btn-active-border-color: var(--axis-primary);
+  --bs-btn-disabled-color: var(--axis-primary);
+  --bs-btn-disabled-border-color: var(--axis-primary);
+  --bs-btn-focus-shadow-rgb: var(--axis-primary-rgb);
+}
+
+/* Main action on a row or card: one size everywhere. Filled = waiting on you. */
+.btn-action {
+  --bs-btn-padding-y: 0;
+  --bs-btn-padding-x: 12px;
+  --bs-btn-font-size: 12px;
+  --bs-btn-font-weight: 600;
+  --bs-btn-border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* Fits the longest label, "Continue editing", so every row lines up. */
+  min-width: 128px;
+  height: 28px;
+  white-space: nowrap;
+}
+
+.btn-outline-warning {
+  --bs-btn-color: #8a5700;
+  --bs-btn-border-color: #8a5700;
+  --bs-btn-hover-bg: #8a5700;
+  --bs-btn-hover-border-color: #8a5700;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-active-bg: #8a5700;
+  --bs-btn-active-color: #fff;
+}
+
+/* Form controls */
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus {
+  border-color: var(--axis-primary);
+  box-shadow: 0 0 0 0.2rem rgba(var(--axis-primary-rgb), 0.15);
+}
+
+.form-check-input:checked {
+  background-color: var(--axis-primary);
+  border-color: var(--axis-primary);
+}
+
+.form-control:hover:not(:focus, :disabled),
+.form-select:hover:not(:focus, :disabled) {
+  border-color: #c4c8cf;
+}
+
+/* Bootstrap's select arrow, recoloured from near-black to the muted grey. */
+.form-select {
+  --bs-form-select-bg-img: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+}
+
+/*
+ * Styled dropdown list. Only browsers that support customizable <select>
+ * (Chrome/Edge 135+, Safari 27+) apply this; others keep the native list.
+ */
+@supports (appearance: base-select) {
+  .form-select,
+  .form-select::picker(select) {
+    appearance: base-select;
+  }
+
+  .form-select {
+    display: flex;
+    align-items: center;
+    /* Native selects never wrap their text; base-select does, so keep it on one line. */
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  /* Keep Bootstrap's arrow (and its invalid icon), so hide the built-in one. */
+  .form-select::picker-icon {
+    display: none;
+  }
+
+  .form-select::picker(select) {
+    margin-top: 4px;
+    padding: 4px;
+    border: 1px solid var(--axis-border);
+    border-radius: 8px;
+    background: var(--axis-surface);
+    box-shadow: 0 8px 24px rgba(16, 24, 40, 0.12);
+  }
+
+  .form-select option {
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-size: 14px;
+    color: var(--axis-text);
+  }
+
+  .form-select option:hover,
+  .form-select option:focus {
+    outline: none;
+    background-color: var(--axis-primary-subtle);
+    color: var(--axis-primary-dark);
+  }
+
+  .form-select option:checked {
+    font-weight: 600;
+    color: var(--axis-primary);
+  }
+
+  /* Tick for the selected option, moved to the right edge. */
+  .form-select option::checkmark {
+    order: 1;
+    margin-left: auto;
+    color: var(--axis-primary);
+  }
+}
+
+/* Status badges */
 .status-badge {
-  display: inline-block;
-  padding: 5px 10px;
-  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px 4px 8px;
+  border-radius: 999px;
   font-size: 11px;
   font-weight: 600;
   white-space: nowrap;
+}
+
+/* Dot in the status's own text colour, so every chip matches its station ink. */
+.status-badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
 }
 
 .status-draft {
@@ -77,29 +347,4 @@ body {
 .status-rejected {
   background: #fee2e2;
   color: #991b1b;
-}
-
-.btn-outline-primary {
-  --bs-btn-color: var(--axis-primary);
-  --bs-btn-border-color: var(--axis-primary);
-  --bs-btn-hover-bg: var(--axis-primary);
-  --bs-btn-hover-border-color: var(--axis-primary);
-  --bs-btn-active-bg: var(--axis-primary);
-  --bs-btn-active-border-color: var(--axis-primary);
-}
-
-.form-control:focus,
-.form-select:focus {
-  border-color: var(--axis-primary);
-  box-shadow: 0 0 0 0.2rem rgba(151, 20, 77, 0.15);
-}
-
-.btn-outline-warning {
-  --bs-btn-color: #8a5700;
-  --bs-btn-border-color: #8a5700;
-  --bs-btn-hover-bg: #8a5700;
-  --bs-btn-hover-border-color: #8a5700;
-  --bs-btn-hover-color: #fff;
-  --bs-btn-active-bg: #8a5700;
-  --bs-btn-active-color: #fff;
 }

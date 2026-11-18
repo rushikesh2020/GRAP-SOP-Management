@@ -13,7 +13,7 @@
   max-height: 100dvh;
 
   border: none;
-  background: #fff;
+  background: var(--axis-surface);
   color: var(--axis-text);
 
   overflow-y: auto;
@@ -37,8 +37,8 @@
   z-index: 10;
 
   padding: 24px;
-  background-color: #fff;
-  border-bottom: 1px solid #dee2e6;
+  background-color: var(--axis-surface);
+  border-bottom: 1px solid var(--axis-border);
 }
 
 .drawer-body {
@@ -49,8 +49,8 @@
   position: sticky;
   bottom: 0;
 
-  background: #fff;
-  border-top: 1px solid #dee2e6;
+  background: var(--axis-surface);
+  border-top: 1px solid var(--axis-border);
   padding: 16px 24px;
   z-index: 10;
 }
@@ -59,9 +59,9 @@
 
 .sop-summary {
   padding: 16px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--axis-border);
   border-radius: 8px;
-  background: #f8f9fa;
+  background: var(--axis-surface-muted);
 }
 
 /* Timeline */
@@ -97,7 +97,7 @@
   left: 17px;
 
   width: 2px;
-  background-color: #e5e7eb;
+  background-color: var(--axis-border);
 }
 
 /* Timeline icons */
@@ -151,7 +151,7 @@
 /* Reviewer remarks */
 
 .remarks-box {
-  background-color: #f8f9fa;
+  background-color: var(--axis-surface-muted);
   border-radius: 6px;
   border-left: 3px solid #ced4da;
   padding: 12px;

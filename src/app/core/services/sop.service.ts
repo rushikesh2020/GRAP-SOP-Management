@@ -15,7 +15,8 @@ import { canReviewSop } from '../utils/sop-permissions';
   providedIn: 'root',
 })
 export class SopService {
-  private readonly storageKey = 'grap-sops-v1';
+  // Bump the version when the mock data changes, so browsers load the new seed.
+  private readonly storageKey = 'grap-sops-v3';
 
   private readonly sopSubject = new BehaviorSubject<Sop[]>(this.loadSops());
 

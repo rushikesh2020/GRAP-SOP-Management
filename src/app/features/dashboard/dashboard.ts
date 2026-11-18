@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { AsyncPipe, DatePipe, formatDate } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 
@@ -16,6 +16,7 @@ import {
 
 import { AuthService } from '../../core/services/auth.service';
 import { SopService } from '../../core/services/sop.service';
+import { NotificationService } from '../../core/services/notification.service';
 
 import { Sop } from '../../models/sop.model';
 import { User } from '../../models/user.model';
@@ -24,18 +25,40 @@ import { SOP_STATUSES, STATUS_CLASSES } from '../../models/sop.constants';
 
 import { SOP_CATEGORIES } from '../../mock-data/categories.data';
 
+import { isOwner, canReviewSop } from '../../core/utils/sop-permissions';
+
 import {
-  isOwner,
-  canEditSop,
-  canStartModification,
-  canReviewSop,
-} from '../../core/utils/sop-permissions';
+  buildActionItems,
+  buildActionSummary,
+  buildPipeline,
+  buildRecentActivity,
+  buildReviewQueue,
+  buildRouteMap,
+  latestEditable,
+  needsAction,
+  rowAction,
+  waitingDays,
+} from '../../core/utils/sop-summary';
 
 import { AppHeaderComponent } from '../../shared/components/app-header/app-header';
 
 import { ActivityComponent } from '../activity/activity';
+import { RouteMapComponent } from './route-map/route-map';
+import { NeedsActionComponent } from './needs-action/needs-action';
+import { RecentActivityComponent } from './recent-activity/recent-activity';
+import { DateRangeComponent } from './date-range/date-range';
 
 type DashboardTab = 'mine' | 'review';
+
+function greetingForNow(): string {
+  const hour = new Date().getHours();
+
+  if (hour < 12) {
+    return 'Good morning';
+  }
+
+  return hour < 17 ? 'Good afternoon' : 'Good evening';
+}
 
 @Component({
   selector: 'app-dashboard',
@@ -46,6 +69,10 @@ type DashboardTab = 'mine' | 'review';
     RouterLink,
     AppHeaderComponent,
     ActivityComponent,
+    RouteMapComponent,
+    NeedsActionComponent,
+    RecentActivityComponent,
+    DateRangeComponent,
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
@@ -54,28 +81,25 @@ export class DashboardComponent {
   private readonly authService = inject(AuthService);
   private readonly sopService = inject(SopService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  private readonly notificationService = inject(NotificationService);
 
   readonly statuses = SOP_STATUSES;
   readonly categories = Object.keys(SOP_CATEGORIES);
   readonly statusClasses = STATUS_CLASSES;
 
-  readonly canEdit = canEditSop;
-  readonly canMakeChanges = canStartModification;
-  readonly canReview = canReviewSop;
+  readonly needsAction = needsAction;
+  readonly rowAction = rowAction;
+  readonly waitingDays = waitingDays;
+
+  readonly greeting = greetingForNow();
 
   // selectedActivity: Sop | null = null;
-  actionError = '';
 
-  successMessage = '';
-
-  constructor() {
-    this.successMessage = sessionStorage.getItem('grap-success') ?? '';
-
-    sessionStorage.removeItem('grap-success');
-  }
-
-  // 1. Active tab
-  private readonly tabSubject = new BehaviorSubject<DashboardTab>('mine');
+  // 1. Active tab (starts from ?tab=review when coming back from a review)
+  private readonly tabSubject = new BehaviorSubject<DashboardTab>(
+    this.route.snapshot.queryParamMap.get('tab') === 'review' ? 'review' : 'mine',
+  );
 
   readonly activeTab$ = this.tabSubject.asObservable();
 
@@ -173,16 +197,9 @@ export class DashboardComponent {
         ? (SOP_CATEGORIES[filters.category] ?? [])
         : [...new Set(Object.values(SOP_CATEGORIES).flat())];
 
-      const approvedByMe = sops.filter(
-        (sop) =>
-          sop.status === 'Approved' &&
-          sop.activity.some(
-            (event) => event.action === 'Approved' && event.performedBy.id === user.id,
-          ),
-      );
-
       return {
         user,
+        firstName: user.name.split(' ')[0],
         isReviewer,
         tab,
         rows,
@@ -193,17 +210,14 @@ export class DashboardComponent {
         myCount: mySops.length,
         reviewCount: reviewSops.length,
 
-        draftCount: mySops.filter((sop) => sop.status === 'Draft').length,
-
-        submittedCount: mySops.filter((sop) => ['Submitted', 'Resubmitted'].includes(sop.status))
-          .length,
-
-        approvedCount: mySops.filter((sop) => sop.status === 'Approved').length,
-
-        needsChangesCount: mySops.filter((sop) =>
-          ['Requested Modification', 'Modification In Progress'].includes(sop.status),
-        ).length,
-        approvedByMeCount: approvedByMe.length,
+        // Hero band: greeting line, routing map and its stats
+        actions: buildActionSummary(sops, user),
+        route: buildRouteMap(sops, user),
+        pipeline: buildPipeline(mySops),
+        queue: isReviewer ? buildReviewQueue(sops, user) : null,
+        continueSop: latestEditable(sops, user),
+        actionItems: buildActionItems(sops, user),
+        recentActivity: buildRecentActivity(sops, user),
       };
     }),
 
@@ -214,8 +228,14 @@ export class DashboardComponent {
   );
 
   selectTab(tab: DashboardTab): void {
-    this.actionError = '';
     this.tabSubject.next(tab);
+
+    // Keep the tab in the URL, so refresh and "Back" links return to the same tab.
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { tab: tab === 'review' ? 'review' : null },
+      replaceUrl: true,
+    });
   }
 
   clearSubCategory(): void {
@@ -228,14 +248,13 @@ export class DashboardComponent {
   }
 
   makeChanges(sop: Sop, user: User): void {
-    this.actionError = '';
-
     const success = this.sopService.startModification(sop.id, user);
 
     if (success) {
+      this.notificationService.info(`${sop.id} is now in Modification In Progress.`);
       this.router.navigate(['/sop', sop.id, 'edit']);
     } else {
-      this.actionError = 'Unable to modify this SOP. Please try again.';
+      this.notificationService.error('Unable to modify this SOP. Please try again.');
     }
   }
 

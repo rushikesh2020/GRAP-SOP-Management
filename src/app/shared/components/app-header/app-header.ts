@@ -1,12 +1,16 @@
-import { Component, Input, inject } from '@angular/core';
+import { Component, ElementRef, HostListener, Input, ViewChild, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 
 import { User } from '../../../models/user.model';
 import { AuthService } from '../../../core/services/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
+import { initials } from '../../../core/utils/sop-summary';
+
+import { NotificationBellComponent } from '../notification-bell/notification-bell';
+
 @Component({
   selector: 'app-header',
-  imports: [RouterLink],
+  imports: [RouterLink, NotificationBellComponent],
   templateUrl: './app-header.html',
   styleUrl: './app-header.css',
 })
@@ -17,7 +21,38 @@ export class AppHeaderComponent {
   private readonly router = inject(Router);
   private readonly notificationService = inject(NotificationService);
 
+  @ViewChild('userMenu') private userMenu?: ElementRef<HTMLElement>;
+  @ViewChild('userButton') private userButton?: ElementRef<HTMLButtonElement>;
+
+  menuOpen = false;
+
+  get initials(): string {
+    return initials(this.user.name);
+  }
+
+  toggleMenu(): void {
+    this.menuOpen = !this.menuOpen;
+  }
+
+  // Close the user menu on a click outside it.
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (this.menuOpen && !this.userMenu?.nativeElement.contains(event.target as Node)) {
+      this.menuOpen = false;
+    }
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    if (this.menuOpen) {
+      this.menuOpen = false;
+      this.userButton?.nativeElement.focus();
+    }
+  }
+
   async signOut(): Promise<void> {
+    this.menuOpen = false;
+
     try {
       this.authService.signOut();
 

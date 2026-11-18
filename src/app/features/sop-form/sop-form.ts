@@ -9,6 +9,8 @@ import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 import { SopService } from '../../core/services/sop.service';
 import { DocumentService } from '../../core/services/document.service';
+import { NotificationService } from '../../core/services/notification.service';
+import { BackNavigationService } from '../../core/services/back-navigation.service';
 
 import { User } from '../../models/user.model';
 
@@ -31,10 +33,14 @@ export class SopFormComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly sopService = inject(SopService);
   private readonly documentService = inject(DocumentService);
+  private readonly notificationService = inject(NotificationService);
 
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly cdr = inject(ChangeDetectorRef);
+
+  // Where "Back" and "Cancel" go: the page the user came from, else My SOPs.
+  readonly backTarget = inject(BackNavigationService).backTarget('mine');
 
   readonly categories = Object.keys(SOP_CATEGORIES);
 
@@ -48,7 +54,7 @@ export class SopFormComponent implements OnInit {
   dragging = false;
 
   fileError = '';
-  saveError = '';
+  loadError = '';
 
   readonly maxFileSize = 10 * 1024 * 1024;
 
@@ -144,7 +150,7 @@ export class SopFormComponent implements OnInit {
         }
       }
     } catch {
-      this.saveError = 'Unable to load the SOP form.';
+      this.loadError = 'Unable to load the SOP form.';
     } finally {
       this.loading = false;
       this.cdr.markForCheck();
@@ -237,8 +243,6 @@ export class SopFormComponent implements OnInit {
   // Save Draft / Save & Submit
 
   async save(mode: SopSaveMode): Promise<void> {
-    this.saveError = '';
-
     this.sopForm.markAllAsTouched();
 
     if (this.sopForm.invalid || this.fileError || !this.user || this.saving) {
@@ -292,7 +296,7 @@ export class SopFormComponent implements OnInit {
         await this.documentService.deleteDocument(uploadedKey).catch(() => {});
       }
 
-      this.saveError = 'Unable to save the SOP. Please try again.';
+      this.notificationService.error('Unable to save the SOP. Please try again.');
     } finally {
       this.saving = false;
       this.cdr.markForCheck();
@@ -306,12 +310,8 @@ export class SopFormComponent implements OnInit {
             ? 'SOP submitted for review successfully.'
             : 'SOP saved successfully.';
 
-      // One-time dashboard success message.
-      try {
-        sessionStorage.setItem('grap-success', message);
-      } catch {
-        // SOP has still been saved.
-      }
+      // The toast lives in the root component, so it stays visible after navigation.
+      this.notificationService.success(message);
 
       await this.router.navigate(['/dashboard']);
     }
@@ -319,7 +319,7 @@ export class SopFormComponent implements OnInit {
 
   cancel(): void {
     if (!this.saving) {
-      this.router.navigate(['/dashboard']);
+      this.router.navigateByUrl(this.backTarget.url);
     }
   }
 }

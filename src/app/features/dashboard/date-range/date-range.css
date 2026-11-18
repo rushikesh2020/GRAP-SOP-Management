@@ -1,0 +1,235 @@
+:host {
+  position: relative;
+  display: block;
+}
+
+/* Looks like the other filter inputs. */
+.field {
+  display: flex;
+  align-items: center;
+  min-height: 38px;
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius);
+  background: var(--axis-surface);
+}
+
+.field:hover {
+  border-color: #c4c8cf;
+}
+
+.field.is-open,
+.field:focus-within {
+  border-color: var(--axis-primary);
+  box-shadow: 0 0 0 0.2rem rgba(var(--axis-primary-rgb), 0.15);
+}
+
+.trigger {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 6px 12px;
+  border: 0;
+  background: none;
+  color: var(--axis-text);
+  text-align: left;
+}
+
+.trigger:focus-visible {
+  outline: none;
+}
+
+.trigger .bi {
+  color: var(--axis-text-muted);
+}
+
+.value {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Not ".placeholder": Bootstrap uses that name for loading skeletons. */
+.value.is-empty {
+  color: var(--axis-text-muted);
+}
+
+.clear {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  margin-right: 4px;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--axis-text-muted);
+  font-size: 12px;
+}
+
+.clear:hover,
+.clear:focus-visible {
+  background: var(--axis-surface-muted);
+  color: var(--axis-primary);
+}
+
+/* Panel: quick ranges on the left, one month on the right. */
+.panel {
+  position: absolute;
+  z-index: 1010;
+  top: calc(100% + 6px);
+  right: 0;
+  display: flex;
+  width: min(480px, calc(100vw - 24px));
+  border: 1px solid var(--axis-border);
+  border-radius: 10px;
+  background: var(--axis-surface);
+  box-shadow: 0 12px 32px rgba(16, 24, 40, 0.16);
+}
+
+.presets {
+  flex: none;
+  width: 150px;
+  margin: 0;
+  padding: 8px;
+  border-right: 1px solid var(--axis-border);
+  list-style: none;
+}
+
+.preset {
+  width: 100%;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: var(--axis-text);
+  font-size: 13px;
+  text-align: left;
+}
+
+.preset:hover,
+.preset:focus-visible {
+  background: var(--axis-primary-subtle);
+  color: var(--axis-primary-dark);
+}
+
+.calendar {
+  flex: 1;
+  padding: 12px;
+}
+
+.calendar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.month {
+  font-size: 14px;
+  font-weight: 600;
+  font-stretch: var(--axis-stretch-display);
+}
+
+.nav {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: var(--axis-text-muted);
+}
+
+.nav:hover,
+.nav:focus-visible {
+  background: var(--axis-surface-muted);
+  color: var(--axis-text);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  row-gap: 2px;
+}
+
+.weekday {
+  padding: 4px 0;
+  font-size: 11px;
+  font-weight: 600;
+  text-align: center;
+  color: var(--axis-text-muted);
+}
+
+.day {
+  height: 34px;
+  border: 0;
+  background: none;
+  color: var(--axis-text);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.day:hover {
+  background: var(--axis-surface-muted);
+  border-radius: 6px;
+}
+
+.day:focus-visible {
+  position: relative;
+  outline: 2px solid var(--axis-primary);
+  outline-offset: -2px;
+  border-radius: 6px;
+}
+
+.day.outside {
+  color: #b8bcc4;
+}
+
+.day.today {
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* The selected range: tinted band with solid ends. */
+.day.between {
+  background: var(--axis-primary-subtle);
+  border-radius: 0;
+}
+
+.day.start,
+.day.end {
+  background: var(--axis-primary);
+  color: #fff;
+  border-radius: 6px;
+}
+
+.hint {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: var(--axis-text-muted);
+}
+
+/* Phones: quick ranges above the calendar. */
+@media (max-width: 575.98px) {
+  .panel {
+    flex-direction: column;
+    left: 0;
+    right: auto;
+  }
+
+  .presets {
+    display: flex;
+    flex-wrap: wrap;
+    width: auto;
+    border-right: 0;
+    border-bottom: 1px solid var(--axis-border);
+  }
+
+  .preset {
+    width: auto;
+  }
+}

@@ -1,0 +1,56 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R /F2 5 0 R >> >> /Contents 6 0 R >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+6 0 obj
+<< /Length 2062 >>
+stream
+0.592 0.078 0.302 rg 0 772 612 20 re f
+BT
+0.122 0.161 0.216 rg /F2 20 Tf 1 0 0 1 64 710 Tm (Standard Operating Procedure) Tj
+0.42 0.447 0.502 rg /F1 10 Tf 1 0 0 1 64 692 Tm (Sample document used by every demo SOP in the GRAP proof of concept.) Tj
+0.592 0.078 0.302 rg /F2 12 Tf 1 0 0 1 64 654 Tm (1. Purpose) Tj
+0.122 0.161 0.216 rg /F1 10.5 Tf 1 0 0 1 64 635.5 Tm (Describe why this procedure exists and the customer or business outcome it protects.) Tj
+0.592 0.078 0.302 rg /F2 12 Tf 1 0 0 1 64 603.5 Tm (2. Scope) Tj
+0.122 0.161 0.216 rg /F1 10.5 Tf 1 0 0 1 64 585.0 Tm (Applies to branch and operations staff handling the request described in this SOP.) Tj
+0.592 0.078 0.302 rg /F2 12 Tf 1 0 0 1 64 553.0 Tm (3. Procedure) Tj
+0.122 0.161 0.216 rg /F1 10.5 Tf 1 0 0 1 64 534.5 Tm (Step 1  Log the request in the case management system and note the reference number.) Tj
+0.122 0.161 0.216 rg /F1 10.5 Tf 1 0 0 1 64 518.0 Tm (Step 2  Verify the customer and the transaction details against core banking records.) Tj
+0.122 0.161 0.216 rg /F1 10.5 Tf 1 0 0 1 64 501.5 Tm (Step 3  Prepare the action and send it for maker-checker approval.) Tj
+0.122 0.161 0.216 rg /F1 10.5 Tf 1 0 0 1 64 485.0 Tm (Step 4  Post the approved action and inform the customer through the registered channel.) Tj
+0.122 0.161 0.216 rg /F1 10.5 Tf 1 0 0 1 64 468.5 Tm (Step 5  Close the case once the customer confirms or the turnaround time ends.) Tj
+0.592 0.078 0.302 rg /F2 12 Tf 1 0 0 1 64 436.5 Tm (4. Controls) Tj
+0.122 0.161 0.216 rg /F1 10.5 Tf 1 0 0 1 64 418.0 Tm (Maker-checker sign-off is required before any financial entry is posted.) Tj
+0.122 0.161 0.216 rg /F1 10.5 Tf 1 0 0 1 64 401.5 Tm (Every step is recorded with the employee ID and a timestamp for audit.) Tj
+0.592 0.078 0.302 rg /F2 12 Tf 1 0 0 1 64 369.5 Tm (5. Turnaround time) Tj
+0.122 0.161 0.216 rg /F1 10.5 Tf 1 0 0 1 64 351.0 Tm (Acknowledge within 1 working day. Resolve within 7 working days.) Tj
+0.42 0.447 0.502 rg /F1 9 Tf 1 0 0 1 64 302.0 Tm (Demo content only. Not an actual Axis Bank procedure.) Tj
+ET
+endstream
+endobj
+xref
+0 7
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000251 00000 n 
+0000000321 00000 n 
+0000000396 00000 n 
+trailer
+<< /Size 7 /Root 1 0 R >>
+startxref
+2510
+%%EOF

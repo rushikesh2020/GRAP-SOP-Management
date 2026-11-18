@@ -1,0 +1,40 @@
+<section class="card h-100" aria-labelledby="recentActivityTitle">
+  <div class="card-body p-3">
+    <h2 id="recentActivityTitle" class="section-title mb-3">Recent activity</h2>
+
+    <div class="scroll-area">
+      @for (group of groups; track group.title) {
+        <h3 class="group-title">{{ group.title }}</h3>
+
+        <ol class="feed">
+          @for (item of group.items; track item.sopId + item.timestamp) {
+            <li class="feed-item">
+              <span [class]="'avatar ' + avatarTone(item.actorId)" aria-hidden="true">
+                {{ item.initials }}
+              </span>
+
+              <div class="feed-body">
+                <p class="feed-text">
+                  <strong>{{ item.actor }}</strong> {{ item.verb }}
+                  <button type="button" class="sop-link" (click)="openActivity.emit(item.sopId)">
+                    {{ item.sopName }}
+                  </button>
+                </p>
+
+                @if (item.remarks) {
+                  <p class="feed-remarks">{{ item.remarks }}</p>
+                }
+
+                <time class="feed-time" [attr.datetime]="item.timestamp">
+                  {{ item.timestamp | date: 'dd MMM, h:mm a' : '+0530' }}
+                </time>
+              </div>
+            </li>
+          }
+        </ol>
+      } @empty {
+        <p class="text-muted small mb-0">No activity yet.</p>
+      }
+    </div>
+  </div>
+</section>

@@ -1,0 +1,299 @@
+:host {
+  display: block;
+}
+
+/* Each station has one ink colour; lines, tabs and names read from it. */
+.tone-draft {
+  --ink: #6b7280;
+}
+
+.tone-review {
+  --ink: #2457c5;
+}
+
+.tone-changes {
+  --ink: #b26a00;
+}
+
+.tone-approved {
+  --ink: #1f7a4d;
+}
+
+.tone-rejected {
+  --ink: #b42318;
+}
+
+.lane-name {
+  margin: 0 0 12px;
+  font-size: 13px;
+  font-weight: 600;
+  font-stretch: normal;
+  color: var(--axis-text-muted);
+}
+
+.lane-for-you {
+  margin-top: 24px;
+}
+
+/* Desktop track: Drafting -> With reviewer -> Decision, with the return loop underneath. */
+.route {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 40px minmax(0, 1fr) 40px minmax(0, 1fr);
+  grid-template-areas:
+    'draft l1 review l2 decision'
+    'loop loop loop . decision';
+  /* A tall decision column adds height to row 2, so the loop stays right under Drafting. */
+  grid-template-rows: auto 1fr;
+  row-gap: 4px;
+}
+
+/* Reviewer lane: same start as "With reviewer", wide enough for tokens to sit side by side. */
+.route-for-you {
+  grid-template-areas: '. . review review review';
+}
+
+.cell-draft {
+  grid-area: draft;
+}
+
+.cell-review {
+  grid-area: review;
+}
+
+.cell-decision {
+  grid-area: decision;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.cell-loop {
+  grid-area: loop;
+  align-self: start;
+}
+
+.link-1 {
+  grid-area: l1;
+}
+
+.link-2 {
+  grid-area: l2;
+}
+
+/* Arrow between stations */
+.link {
+  position: relative;
+  align-self: start;
+  height: 2px;
+  margin: 12px 6px 0;
+  background: #c4c8cf;
+}
+
+.link::after {
+  content: '';
+  position: absolute;
+  right: -2px;
+  top: -4px;
+  border: 5px solid transparent;
+  border-left-color: #c4c8cf;
+  border-right-width: 0;
+}
+
+/* A station is a tray: ink rule on top, tokens inside. */
+.station {
+  padding-top: 8px;
+  border-top: 3px solid var(--ink);
+}
+
+.station-name {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin: 0 0 10px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.station-count {
+  font-size: 13px;
+  font-weight: 500;
+  font-stretch: normal;
+  color: var(--axis-text-muted);
+}
+
+/* Return loop: a dashed U from "With reviewer" back up to "Drafting". */
+.loop {
+  position: relative;
+  margin-top: 6px;
+  padding: 14px 16px 12px;
+  border: 2px dashed var(--status-changes-solid);
+  border-top: 0;
+  border-radius: 0 0 14px 14px;
+}
+
+.loop::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: -7px;
+  border: 6px solid transparent;
+  border-bottom-color: var(--status-changes-solid);
+  border-top-width: 0;
+}
+
+.loop .station {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.tokens {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* SOP token, shaped like a file with a coloured tab. */
+.token {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  margin-top: 4px;
+  padding: 6px 10px;
+  border: 1px solid var(--axis-border);
+  border-radius: 2px 8px 8px 8px;
+  background: var(--axis-surface);
+  color: var(--axis-text);
+  font-size: 12px;
+  text-decoration: none;
+}
+
+.token::before {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: -1px;
+  width: 20px;
+  height: 5px;
+  border-radius: 3px 3px 0 0;
+  background: var(--ink);
+}
+
+.token:hover {
+  border-color: var(--ink);
+}
+
+.token:focus-visible {
+  outline: 2px solid var(--axis-primary);
+  outline-offset: 2px;
+}
+
+.token-id {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.token-name {
+  min-width: 0;
+  max-width: 150px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--axis-text-muted);
+}
+
+.token-days {
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--axis-surface-muted);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Waiting on the signed-in user: filled with the brand colour. */
+.token.needs-you {
+  border-color: var(--axis-primary);
+  background: var(--axis-primary);
+  color: #fff;
+}
+
+.token.needs-you::before {
+  background: var(--axis-primary-dark);
+}
+
+.token.needs-you .token-name {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.token.needs-you .token-days {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.token.needs-you:hover {
+  background: var(--axis-primary-dark);
+}
+
+.empty,
+.more {
+  font-size: 12px;
+  color: var(--axis-text-muted);
+}
+
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 24px;
+  margin: 20px 0 0;
+  font-size: 12px;
+  color: var(--axis-text-muted);
+}
+
+.stats strong {
+  margin-left: 4px;
+  color: var(--axis-text);
+}
+
+/* Phones: the track runs top to bottom. */
+@media (max-width: 767.98px) {
+  .route,
+  .route-for-you {
+    grid-template-columns: 1fr;
+    grid-template-areas: 'draft' 'l1' 'review' 'l2' 'decision' 'loop';
+    row-gap: 0;
+  }
+
+  .route-for-you {
+    grid-template-areas: 'review';
+  }
+
+  .link {
+    width: 2px;
+    height: 20px;
+    margin: 6px 0 10px 14px;
+  }
+
+  .link::after {
+    top: auto;
+    right: -4px;
+    bottom: -2px;
+    border: 5px solid transparent;
+    border-top-color: #c4c8cf;
+    border-bottom-width: 0;
+  }
+
+  .loop {
+    margin-top: 18px;
+    border-top: 2px dashed var(--status-changes-solid);
+    border-radius: 14px;
+  }
+
+  .loop::before {
+    display: none;
+  }
+}

@@ -1,0 +1,57 @@
+<section class="card h-100" aria-labelledby="needsActionTitle">
+  <div class="card-body p-3">
+    <h2 id="needsActionTitle" class="section-title mb-3">
+      Needs your action
+      @if (items.length) {
+        <span class="count-pill">{{ items.length }}</span>
+      }
+    </h2>
+
+    <ul class="action-list scroll-area">
+      @for (item of items; track item.sop.id) {
+        <li [class]="'action-item kind-' + item.kind">
+          <div class="d-flex flex-wrap justify-content-between gap-2">
+            <div>
+              <span class="action-title">{{ item.sop.name }}</span>
+              <span class="action-meta">{{ item.sop.id }}, version {{ item.sop.version }}</span>
+            </div>
+
+            <span class="waiting" [class.waiting-late]="item.waitingDays >= 5">
+              Waiting {{ item.waitingDays }} {{ item.waitingDays === 1 ? 'day' : 'days' }}
+            </span>
+          </div>
+
+          <div class="d-flex flex-wrap align-items-end gap-3 mt-2">
+            @if (item.note; as note) {
+              <blockquote class="note">
+                <span class="note-author">{{ note.author }}</span>
+                {{ note.text }}
+              </blockquote>
+            } @else {
+              <p class="note note-empty">No comments added.</p>
+            }
+
+            @if (item.action.link) {
+              <a class="btn btn-action btn-primary" [routerLink]="item.action.link">
+                {{ item.action.label }}
+              </a>
+            } @else {
+              <button
+                type="button"
+                class="btn btn-action btn-primary"
+                (click)="makeChanges.emit(item.sop)"
+              >
+                {{ item.action.label }}
+              </button>
+            }
+          </div>
+        </li>
+      } @empty {
+        <li class="empty">
+          <i class="bi bi-check2-circle" aria-hidden="true"></i>
+          Nothing needs your action right now.
+        </li>
+      }
+    </ul>
+  </div>
+</section>

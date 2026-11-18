@@ -1,0 +1,121 @@
+<!-- One station: name, count and its SOP tokens -->
+<ng-template #stationTpl let-station let-name="name">
+  <div [class]="'station tone-' + station.tone">
+    <h3 class="station-name">
+      {{ name }}
+      <span class="station-count">{{ station.total }}</span>
+    </h3>
+
+    <ul class="tokens">
+      @for (token of station.tokens; track token.id) {
+        <li>
+          <a
+            class="token"
+            [class.needs-you]="token.needsYou"
+            [routerLink]="token.link"
+            [attr.aria-label]="token.label"
+            [title]="token.name"
+          >
+            <span class="token-id">{{ token.id }}</span>
+            <span class="token-name">{{ token.name }}</span>
+
+            @if (token.waitingDays !== null) {
+              <span class="token-days">{{ token.waitingDays }}d</span>
+            }
+          </a>
+        </li>
+      } @empty {
+        <li class="empty">None</li>
+      }
+
+      @if (station.more > 0) {
+        <li class="more">and {{ station.more }} more in the table below</li>
+      }
+    </ul>
+  </div>
+</ng-template>
+
+<div class="route-map">
+  <h2 class="lane-name">Where your SOPs are</h2>
+
+  <!-- Main flow, left to right: Drafting, With reviewer, then the decision -->
+  <div class="route">
+    <div class="cell-draft">
+      <ng-container
+        [ngTemplateOutlet]="stationTpl"
+        [ngTemplateOutletContext]="{ $implicit: map.mine.draft, name: stationNames.draft }"
+      />
+    </div>
+
+    <span class="link link-1" aria-hidden="true"></span>
+
+    <div class="cell-review">
+      <ng-container
+        [ngTemplateOutlet]="stationTpl"
+        [ngTemplateOutletContext]="{ $implicit: map.mine.review, name: stationNames.review }"
+      />
+    </div>
+
+    <span class="link link-2" aria-hidden="true"></span>
+
+    <div class="cell-decision">
+      <ng-container
+        [ngTemplateOutlet]="stationTpl"
+        [ngTemplateOutletContext]="{ $implicit: map.mine.approved, name: stationNames.approved }"
+      />
+      <ng-container
+        [ngTemplateOutlet]="stationTpl"
+        [ngTemplateOutletContext]="{ $implicit: map.mine.rejected, name: stationNames.rejected }"
+      />
+    </div>
+
+    <!-- The return loop: reviewer sends it back, the creator reworks and resubmits -->
+    <div class="cell-loop loop">
+      <ng-container
+        [ngTemplateOutlet]="stationTpl"
+        [ngTemplateOutletContext]="{ $implicit: map.mine.changes, name: stationNames.changes }"
+      />
+    </div>
+  </div>
+
+  @if (map.forYou; as forYou) {
+    <h2 class="lane-name lane-for-you">Sent to you for review</h2>
+
+    <div class="route route-for-you">
+      <div class="cell-review">
+        <ng-container
+          [ngTemplateOutlet]="stationTpl"
+          [ngTemplateOutletContext]="{ $implicit: forYou, name: 'Waiting for you' }"
+        />
+      </div>
+    </div>
+  }
+
+  <p class="stats">
+    <span>
+      Approval rate
+      <strong>{{ pipeline.approvalRate === null ? '—' : pipeline.approvalRate + '%' }}</strong>
+    </span>
+
+    <span>
+      Approved first time
+      <strong>
+        {{
+          pipeline.counts.approved
+            ? pipeline.firstPassApprovals + ' of ' + pipeline.counts.approved
+            : '—'
+        }}
+      </strong>
+    </span>
+
+    @if (queue) {
+      <span>
+        Oldest review waiting <strong>{{ queue.oldestWaiting }}</strong>
+      </span>
+
+      <span>
+        Approved by you <strong>{{ queue.approvedByMe }}</strong>
+      </span>
+    }
+  </p>
+</div>
