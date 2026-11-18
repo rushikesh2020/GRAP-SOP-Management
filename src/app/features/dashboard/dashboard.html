@@ -298,8 +298,6 @@
                           @if (action.link) {
                             <a
                               class="btn btn-icon"
-                              [class.is-needs-you]="action.needsYou"
-                              [class.is-mine]="!action.needsYou"
                               [routerLink]="action.link"
                               [attr.aria-label]="action.label + ' ' + sop.name"
                               [title]="action.label"
@@ -309,7 +307,7 @@
                           } @else {
                             <button
                               type="button"
-                              class="btn btn-icon is-needs-you"
+                              class="btn btn-icon"
                               (click)="makeChanges(sop, vm.user)"
                               [attr.aria-label]="action.label + ' ' + sop.name"
                               [title]="action.label"

@@ -1,16 +1,18 @@
-.login-container {
+.login-page {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
   min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 24px;
-  background: var(--axis-background);
+  background: var(--axis-surface);
 }
 
-.login-card {
-  width: 100%;
-  max-width: 440px;
-  border-radius: 16px;
+/* ---------- Brand panel ---------- */
+.brand-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  padding: 40px 48px;
+  background: var(--axis-primary);
+  color: #fff;
 }
 
 /* Same lockup as the header: the mark on a white tile, then the wordmark. */
@@ -18,10 +20,6 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  padding: 8px 18px 8px 8px;
-  border-radius: 10px;
-  background-color: var(--axis-primary);
-  color: #fff;
   font-weight: 700;
   letter-spacing: 0.06em;
 }
@@ -29,8 +27,8 @@
 .brand-mark {
   display: grid;
   place-items: center;
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   border-radius: 8px;
   background: #fff;
 }
@@ -39,6 +37,214 @@
   display: block;
 }
 
-.form-check-label {
+/* Centred between the logo and the footer note. */
+.brand-copy {
+  margin: auto 0;
+}
+
+.product-name {
+  margin: 0;
+  color: #fff;
+  font-size: 3.5rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.product-sub {
+  margin: 6px 0 20px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  font-stretch: var(--axis-stretch-display);
+  opacity: 0.9;
+}
+
+.product-line {
+  max-width: 34ch;
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.55;
+  opacity: 0.85;
+}
+
+.brand-note {
+  margin: 0;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+/* ---------- Sign-in panel ---------- */
+.signin-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  background: var(--axis-background);
+}
+
+.signin-inner {
+  width: 100%;
+  max-width: 460px;
+}
+
+.signin-title {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+.signin-lead {
+  margin: 4px 0 24px;
+  color: var(--axis-text-muted);
+}
+
+fieldset {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+/* "Pick an account" list: one panel, rows split by thin dividers. */
+.personas {
+  border: 1px solid var(--axis-border);
+  border-radius: 12px;
+  background: var(--axis-surface);
+  overflow: hidden;
+}
+
+/* A demo account: a real radio input, drawn as a list row. */
+.persona {
+  display: block;
   cursor: pointer;
 }
+
+.persona + .persona {
+  border-top: 1px solid var(--axis-border);
+}
+
+.persona-radio {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.persona-body {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  transition: background-color 0.12s ease;
+}
+
+.persona:hover .persona-body {
+  background: var(--axis-surface-muted);
+}
+
+.persona-radio:checked + .persona-body {
+  background: var(--axis-primary-subtle);
+}
+
+.persona-radio:focus-visible + .persona-body {
+  outline: 2px solid var(--axis-primary);
+  outline-offset: -2px;
+}
+
+.avatar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--axis-surface-muted);
+  color: var(--axis-text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  transition:
+    background-color 0.12s ease,
+    color 0.12s ease;
+}
+
+.persona-radio:checked + .persona-body .avatar {
+  background: var(--axis-primary);
+  color: #fff;
+}
+
+.persona-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.persona-name {
+  font-weight: 600;
+  color: var(--axis-text);
+}
+
+.persona-radio:checked + .persona-body .persona-name {
+  color: var(--axis-primary);
+}
+
+.persona-email {
+  overflow: hidden;
+  font-size: 12px;
+  color: var(--axis-text-muted);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.persona-role {
+  flex: none;
+  font-size: 12px;
+  color: var(--axis-text-muted);
+}
+
+.signin-button {
+  width: 100%;
+  margin-top: 24px;
+  padding: 12px;
+  font-weight: 600;
+}
+
+.signin-help {
+  margin: 12px 0 0;
+  font-size: 12px;
+  text-align: center;
+  color: var(--axis-text-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .persona-body,
+  .avatar {
+    transition: none;
+  }
+}
+
+/* Tablet and phone: brand panel becomes a short band on top. */
+@media (max-width: 991.98px) {
+  .login-page {
+    grid-template-columns: 1fr;
+  }
+
+  .brand-panel {
+    gap: 16px;
+    padding: 20px 24px 24px;
+  }
+
+  .product-name {
+    font-size: 2.25rem;
+  }
+
+  .product-sub {
+    margin-bottom: 8px;
+  }
+
+  .brand-note {
+    display: none;
+  }
+
+  .signin-panel {
+    align-items: flex-start;
+  }
+}
+

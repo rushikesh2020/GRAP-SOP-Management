@@ -3,20 +3,20 @@ import { User } from '../models/user.model';
 export const MOCK_USERS: User[] = [
   {
     id: 'EMP001',
-    name: 'Anu Jha',
-    email: 'anu.jha@axisbank.com',
+    name: 'Rushikesh Khardekar',
+    email: 'rushikesh.khardekar@axisbank.com',
     role: 'Maker',
   },
   {
     id: 'EMP004',
-    name: 'Rahul Mehta',
-    email: 'rahul.mehta@axisbank.com',
+    name: 'Shiva Batra',
+    email: 'shiva.batra@axisbank.com',
     role: 'Maker',
   },
   {
     id: 'EMP002',
-    name: 'Priya Singh',
-    email: 'priya.singh@axisbank.com',
+    name: 'Priya Patil',
+    email: 'priya.patil@axisbank.com',
     role: 'Reviewer',
   },
   {
@@ -27,8 +27,8 @@ export const MOCK_USERS: User[] = [
   },
   {
     id: 'EMP006',
-    name: 'Neha Kapoor',
-    email: 'neha.kapoor@axisbank.com',
+    name: 'Neha Joshi',
+    email: 'neha.joshi@axisbank.com',
     role: 'Maker',
   },
   {

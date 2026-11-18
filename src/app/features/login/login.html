@@ -1,66 +1,71 @@
-<div class="login-container">
-  <div class="card login-card shadow-sm p-4 p-md-5">
-    <div class="text-center mb-4">
-      <div class="brand-logo mb-3">
-        <span class="brand-mark">
-          <img src="axis.png" alt="" width="28" height="28" />
-        </span>
-        AXIS BANK
-      </div>
-
-      <h1 class="text-axis fw-bold">GRAP</h1>
-
-      <h4>SOP Management</h4>
-
-      <p class="text-muted small">Grievance Resolution Automation Program</p>
+<div class="login-page">
+  <!-- Brand panel: what GRAP is -->
+  <section class="brand-panel" aria-labelledby="productName">
+    <div class="brand-logo">
+      <span class="brand-mark">
+        <img src="axis.png" alt="" width="26" height="26" />
+      </span>
+      AXIS BANK
     </div>
 
-    <form [formGroup]="loginForm" (ngSubmit)="signIn()">
-      <fieldset class="mb-4">
-        <legend class="form-label fs-6 fw-semibold">Choose demo account</legend>
+    <div class="brand-copy">
+      <h1 id="productName" class="product-name">GRAP</h1>
+      <p class="product-sub">SOP Management</p>
+      <p class="product-line">Create, review and publish SOPs.</p>
+    </div>
 
-        @for (user of users; track user.id) {
-          <div class="form-check border rounded p-3 ps-5 mb-2">
-            <input
-              type="radio"
-              class="form-check-input"
-              [id]="user.id"
-              [value]="user.id"
-              formControlName="userId"
-            />
+    <p class="brand-note">Grievance Resolution Automation Program. Demo environment.</p>
+  </section>
 
-            <label class="form-check-label w-100" [for]="user.id">
-              <span class="fw-semibold">
-                {{ user.name }}
-              </span>
+  <!-- Sign-in panel -->
+  <main class="signin-panel">
+    <div class="signin-inner">
+      <h2 class="signin-title">Sign in</h2>
+      <p class="signin-lead">Choose a demo account to continue.</p>
 
-              <span class="d-block text-muted small">
-                {{ user.role }}
-              </span>
-            </label>
+      <form [formGroup]="loginForm" (ngSubmit)="signIn()">
+        <fieldset>
+          <legend class="visually-hidden">Choose a demo account</legend>
+
+          <div class="personas">
+            @for (persona of personas$ | async; track persona.user.id) {
+              <label class="persona" [for]="persona.user.id">
+                <input
+                  type="radio"
+                  class="persona-radio"
+                  [id]="persona.user.id"
+                  [value]="persona.user.id"
+                  formControlName="userId"
+                />
+
+                <span class="persona-body">
+                  <span class="avatar" aria-hidden="true">{{ persona.initials }}</span>
+
+                  <span class="persona-text">
+                    <span class="persona-name">{{ persona.user.name }}</span>
+                    <span class="persona-email">{{ persona.user.email }}</span>
+                  </span>
+
+                  <span class="persona-role">{{ persona.roleLabel }}</span>
+                </span>
+              </label>
+            }
+          </div>
+        </fieldset>
+
+        @if (errorMessage) {
+          <div class="alert alert-danger mt-3" role="alert">
+            {{ errorMessage }}
           </div>
         }
-      </fieldset>
 
-      @if (errorMessage) {
-        <div class="alert alert-danger" role="alert">
-          {{ errorMessage }}
-        </div>
-      }
+        <button type="submit" class="btn btn-primary signin-button" [disabled]="loginForm.invalid">
+          <i class="bi bi-shield-check me-2" aria-hidden="true"></i>
+          Sign in with Axis SSO
+        </button>
+      </form>
 
-      <button type="submit" class="btn btn-primary w-100 py-3" [disabled]="loginForm.invalid">
-        <i class="bi bi-shield-check me-2" aria-hidden="true"></i>
-
-        Sign in with Axis SSO
-      </button>
-    </form>
-
-    <p class="text-center text-muted small mt-3">
-      Use your bank Microsoft account. No separate password required.
-    </p>
-
-    <hr />
-
-    <p class="text-center text-muted small mb-0">Demo environment. Sign-in is simulated.</p>
-  </div>
+      <p class="signin-help">Use your bank Microsoft account.</p>
+    </div>
+  </main>
 </div>

@@ -25,4 +25,11 @@ export class NeedsActionComponent {
   get toRework(): ActionItem[] {
     return this.items.filter((item) => item.kind !== 'review');
   }
+
+  // Bar length compared with the longest wait in the same group (never shorter than a sliver).
+  agePercent(item: ActionItem, group: ActionItem[]): number {
+    const longest = Math.max(1, ...group.map((entry) => entry.waitingDays));
+
+    return Math.max(6, Math.round((item.waitingDays / longest) * 100));
+  }
 }

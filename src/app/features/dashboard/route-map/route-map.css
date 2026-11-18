@@ -2,37 +2,42 @@
   display: block;
 }
 
-/* Each station has one ink colour; lines, tabs and names read from it. */
+/* Each station has an ink (lines, tabs, names) and a light tint of it (the tray). */
 .tone-draft {
   --ink: #6b7280;
+  --tint: #f3f4f6;
 }
 
 .tone-review {
   --ink: #2457c5;
+  --tint: #eef3fd;
 }
 
 .tone-changes {
   --ink: #b26a00;
+  --tint: #fdf5e9;
 }
 
 .tone-approved {
   --ink: #1f7a4d;
+  --tint: #ecf6f0;
 }
 
 .tone-rejected {
   --ink: #b42318;
+  --tint: #fdf1f0;
 }
 
+/* Section headings of the band: "Where your SOPs are", "Sent to you for review" */
 .lane-name {
   margin: 0 0 12px;
-  font-size: 13px;
-  font-weight: 600;
-  font-stretch: normal;
-  color: var(--axis-text-muted);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--axis-text);
 }
 
 .lane-for-you {
-  margin-top: 24px;
+  margin-top: 28px;
 }
 
 /* Desktop track: Drafting -> With reviewer -> Decision, with the return loop underneath. */
@@ -47,9 +52,9 @@
   row-gap: 4px;
 }
 
-/* Reviewer lane: same start as "With reviewer", wide enough for tokens to sit side by side. */
+/* Reviewer lane: full width from the left, tokens flow across it. */
 .route-for-you {
-  grid-template-areas: '. . review review review';
+  grid-template-areas: 'review review review review review';
 }
 
 .cell-draft {
@@ -58,6 +63,18 @@
 
 .cell-review {
   grid-area: review;
+}
+
+/* Trays in the first row share one height, so the row reads as one line. */
+.cell-draft,
+.cell-review {
+  display: flex;
+  flex-direction: column;
+}
+
+.cell-draft .station,
+.cell-review .station {
+  flex: 1;
 }
 
 .cell-decision {
@@ -85,7 +102,7 @@
   position: relative;
   align-self: start;
   height: 2px;
-  margin: 12px 6px 0;
+  margin: 28px 6px 0;
   background: #c4c8cf;
 }
 
@@ -99,16 +116,20 @@
   border-right-width: 0;
 }
 
-/* A station is a tray: ink rule on top, tokens inside. */
+/* A station is a tray: tinted in its colour, with an ink rule along the top. */
 .station {
-  padding-top: 8px;
-  border-top: 3px solid var(--ink);
+  padding: 12px 14px 14px;
+  border-radius: 10px;
+  background: var(--tint);
+  box-shadow: inset 0 3px 0 var(--ink);
 }
 
+/* Station header: name on the left, its count as the big number on the right. */
 .station-name {
   display: flex;
   align-items: baseline;
-  gap: 6px;
+  justify-content: space-between;
+  gap: 8px;
   margin: 0 0 10px;
   font-size: 15px;
   font-weight: 600;
@@ -116,10 +137,11 @@
 }
 
 .station-count {
-  font-size: 13px;
-  font-weight: 500;
-  font-stretch: normal;
-  color: var(--axis-text-muted);
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
 }
 
 /* Return loop: a dashed U from "With reviewer" back up to "Drafting". */
@@ -130,6 +152,7 @@
   border: 2px dashed var(--status-changes-solid);
   border-top: 0;
   border-radius: 0 0 14px 14px;
+  background: #fdf5e9;
 }
 
 .loop::before {
@@ -142,9 +165,11 @@
   border-top-width: 0;
 }
 
+/* The loop itself is the tray, so its station needs no box of its own. */
 .loop .station {
-  padding-top: 0;
-  border-top: 0;
+  padding: 0;
+  background: none;
+  box-shadow: none;
 }
 
 .tokens {
@@ -154,6 +179,12 @@
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+/* A token may shrink to its tray (the name truncates), never poke out of it. */
+.tokens li {
+  min-width: 0;
+  max-width: 100%;
 }
 
 /* SOP token, shaped like a file with a coloured tab. */

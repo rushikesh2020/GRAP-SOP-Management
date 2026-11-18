@@ -179,9 +179,9 @@
   white-space: nowrap;
 }
 
-/* Square icon button, same height as .btn-sm */
+/* Square icon button, same height as .btn-sm. All row actions share one colour. */
 .btn-icon {
-  --bs-btn-color: var(--axis-text-muted);
+  --bs-btn-color: var(--axis-primary);
   --bs-btn-bg: var(--axis-surface);
   --bs-btn-border-color: var(--axis-border);
   --bs-btn-hover-color: var(--axis-primary);
@@ -200,25 +200,6 @@
   align-items: center;
   justify-content: center;
   font-size: 14px;
-}
-
-/* Main action, waiting on you: filled brand colour. */
-.btn-icon.is-needs-you {
-  --bs-btn-color: #fff;
-  --bs-btn-bg: var(--axis-primary);
-  --bs-btn-border-color: var(--axis-primary);
-  --bs-btn-hover-color: #fff;
-  --bs-btn-hover-bg: var(--axis-primary-dark);
-  --bs-btn-hover-border-color: var(--axis-primary-dark);
-  --bs-btn-active-color: #fff;
-  --bs-btn-active-bg: var(--axis-primary-dark);
-  --bs-btn-active-border-color: var(--axis-primary-dark);
-}
-
-/* Main action, nobody waiting (your own draft): brand outline. */
-.btn-icon.is-mine {
-  --bs-btn-color: var(--axis-primary);
-  --bs-btn-border-color: var(--axis-primary-border);
 }
 
 /* Keeps the icons aligned in rows that have no main action. */
