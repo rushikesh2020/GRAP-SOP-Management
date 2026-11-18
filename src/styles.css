@@ -137,6 +137,21 @@ h6 {
   opacity: 0.5;
 }
 
+/* Page changes: a short cross-fade. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 180ms;
+  animation-timing-function: ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
 .text-axis {
   color: var(--axis-primary);
 }
@@ -291,6 +306,69 @@ h6 {
     margin-left: auto;
     color: var(--axis-primary);
   }
+}
+
+/* Pager under a table (reusable) */
+.pager {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.pager-pages {
+  display: flex;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pager-step,
+.pager-page {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 32px;
+  border: 1px solid var(--axis-border);
+  border-radius: 6px;
+  background: var(--axis-surface);
+  color: var(--axis-text);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.pager-step {
+  padding: 0 10px;
+}
+
+.pager-page {
+  min-width: 32px;
+}
+
+.pager-step:hover:not(:disabled),
+.pager-page:hover:not(.is-current) {
+  border-color: var(--axis-primary-border);
+  color: var(--axis-primary);
+}
+
+.pager-step:disabled {
+  opacity: 0.45;
+}
+
+.pager-page.is-current {
+  border-color: var(--axis-primary);
+  background: var(--axis-primary);
+  color: #fff;
+  font-weight: 600;
+}
+
+.pager-step:focus-visible,
+.pager-page:focus-visible {
+  outline: 2px solid var(--axis-primary);
+  outline-offset: 2px;
 }
 
 /* Status badges */

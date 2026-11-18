@@ -198,7 +198,11 @@
 
           <!-- Results count -->
           <div class="text-muted small mb-3" aria-live="polite">
-            Showing {{ vm.rows.length }} of {{ vm.totalCount }} SOPs.
+            @if (vm.rows.length) {
+              Showing {{ vm.pager.from }}–{{ vm.pager.to }} of {{ vm.rows.length }} SOPs.
+            } @else {
+              Showing 0 of {{ vm.totalCount }} SOPs.
+            }
 
             @if (vm.actions.count > 0) {
               <span class="legend-needs-you">Highlighted rows are waiting on you.</span>
@@ -228,7 +232,7 @@
               </thead>
 
               <tbody>
-                @for (sop of vm.rows; track sop.id) {
+                @for (sop of vm.pageRows; track sop.id) {
                   <tr [class.needs-you]="needsAction(sop, vm.user)">
                     <td class="sop-id">
                       {{ sop.id }}
@@ -363,6 +367,48 @@
               </tbody>
             </table>
           </div>
+
+          <!-- Pages: only when there is more than one -->
+          @if (vm.pager.pageCount > 1) {
+            <nav class="pager" aria-label="Table pages">
+              <button
+                type="button"
+                class="pager-step"
+                [disabled]="vm.pager.page === 1"
+                (click)="goToPage(vm.pager.page - 1)"
+              >
+                <i class="bi bi-chevron-left" aria-hidden="true"></i>
+                Previous
+              </button>
+
+              <ol class="pager-pages">
+                @for (page of vm.pager.pages; track page) {
+                  <li>
+                    <button
+                      type="button"
+                      class="pager-page"
+                      [class.is-current]="page === vm.pager.page"
+                      [attr.aria-current]="page === vm.pager.page ? 'page' : null"
+                      [attr.aria-label]="'Page ' + page"
+                      (click)="goToPage(page)"
+                    >
+                      {{ page }}
+                    </button>
+                  </li>
+                }
+              </ol>
+
+              <button
+                type="button"
+                class="pager-step"
+                [disabled]="vm.pager.page === vm.pager.pageCount"
+                (click)="goToPage(vm.pager.page + 1)"
+              >
+                Next
+                <i class="bi bi-chevron-right" aria-hidden="true"></i>
+              </button>
+            </nav>
+          }
         </div>
       </section>
 

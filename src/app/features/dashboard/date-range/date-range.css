@@ -76,6 +76,7 @@
 
 /* Panel: quick ranges on the left, one month on the right. */
 .panel {
+  animation: menu-in 0.14s ease-out;
   position: absolute;
   z-index: 1010;
   top: calc(100% + 6px);
@@ -231,5 +232,24 @@
 
   .preset {
     width: auto;
+  }
+}
+
+/* Opening answers the click: fade in, rising slightly from the button. */
+@keyframes menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel {
+    animation: none;
   }
 }

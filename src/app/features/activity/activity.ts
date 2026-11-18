@@ -8,8 +8,26 @@ import { SopService } from '../../core/services/sop.service';
 import { AuthService } from '../../core/services/auth.service';
 
 import { STATUS_CLASSES } from '../../models/sop.constants';
+import { SopActivity, SopStatus } from '../../models/sop.model';
 import { canViewSop } from '../../core/utils/sop-permissions';
+import { StageTone, stageTone } from '../../core/utils/sop-summary';
 
+// All events that happened on one version of the file, newest first.
+interface VersionBand {
+  version: number;
+  newFile: boolean;
+  events: SopActivity[];
+}
+
+function times(count: number): string {
+  if (count === 1) {
+    return 'once';
+  }
+
+  return count === 2 ? 'twice' : `${count} times`;
+}
+
+// The SOP's routing slip: every action, grouped by file version.
 @Component({
   selector: 'app-activity',
   imports: [AsyncPipe, DatePipe],
@@ -42,14 +60,16 @@ export class ActivityComponent {
             return null;
           }
 
-          // Sort the actual history newest first.
+          // Newest first; reverse first so same-time events keep their real order.
           const events = [...sop.activity]
             .reverse()
             .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
           return {
             sop,
-            events,
+            eventCount: events.length,
+            bands: this.toBands(events),
+            story: this.toStory(sop.activity),
           };
         }),
       );
@@ -76,27 +96,45 @@ export class ActivityComponent {
     }
   }
 
-  getActivityIcon(action: string): string {
-    const icons: Record<string, string> = {
-      Created: 'bi-file-earmark-plus',
+  tone(status: SopStatus): StageTone {
+    return stageTone(status);
+  }
 
-      'Draft saved': 'bi-floppy',
+  private toBands(events: SopActivity[]): VersionBand[] {
+    const bands: VersionBand[] = [];
 
-      Submitted: 'bi-send',
+    for (const event of events) {
+      let band = bands[bands.length - 1];
 
-      'Modification requested': 'bi-chat-left-text',
+      if (!band || band.version !== event.version) {
+        band = { version: event.version, newFile: false, events: [] };
+        bands.push(band);
+      }
 
-      'Modification started': 'bi-pencil-square',
+      band.events.push(event);
 
-      'Modification saved': 'bi-floppy',
+      if (event.previousVersion !== undefined && event.previousVersion !== event.version) {
+        band.newFile = true;
+      }
+    }
 
-      Resubmitted: 'bi-arrow-repeat',
+    return bands;
+  }
 
-      Approved: 'bi-check-circle',
+  // One line that tells the SOP's journey, e.g. "Submitted 3 times. Returned for changes twice."
+  private toStory(activity: SopActivity[]): string {
+    const submits = activity.filter(
+      (event) => event.action === 'Submitted' || event.action === 'Resubmitted',
+    ).length;
 
-      Rejected: 'bi-x-circle',
-    };
+    const returns = activity.filter((event) => event.action === 'Modification requested').length;
 
-    return icons[action] ?? 'bi-clock-history';
+    if (!submits) {
+      return 'Not submitted for review yet.';
+    }
+
+    const story = `Submitted ${times(submits)}.`;
+
+    return returns ? `${story} Returned for changes ${times(returns)}.` : story;
   }
 }

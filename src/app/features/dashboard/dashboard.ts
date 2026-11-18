@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AsyncPipe, DatePipe, formatDate } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
@@ -10,6 +11,7 @@ import {
   debounceTime,
   distinctUntilChanged,
   map,
+  merge,
   shareReplay,
   startWith,
 } from 'rxjs';
@@ -49,6 +51,8 @@ import { RecentActivityComponent } from './recent-activity/recent-activity';
 import { DateRangeComponent } from './date-range/date-range';
 
 type DashboardTab = 'mine' | 'review';
+
+const PAGE_SIZE = 10;
 
 function greetingForNow(): string {
   const hour = new Date().getHours();
@@ -128,15 +132,25 @@ export class DashboardComponent {
     startWith(this.filterForm.getRawValue()),
   );
 
-  // 4. Combined dashboard view model
+  // 4. Table page (1-based). Any change to search or filters starts again at page 1.
+  private readonly pageSubject = new BehaviorSubject<number>(1);
+
+  constructor() {
+    merge(this.searchControl.valueChanges, this.filterForm.valueChanges)
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => this.pageSubject.next(1));
+  }
+
+  // 5. Combined dashboard view model
   readonly vm$ = combineLatest({
     user: this.authService.currentUser$,
     sops: this.sopService.sops$,
     activeTab: this.activeTab$,
     search: this.search$,
     filters: this.filters$,
+    page: this.pageSubject,
   }).pipe(
-    map(({ user, sops, activeTab, search, filters }) => {
+    map(({ user, sops, activeTab, search, filters, page }) => {
       if (!user || user.role === 'Unassigned') {
         return null;
       }
@@ -193,6 +207,12 @@ export class DashboardComponent {
       // Latest updated SOP first.
       rows.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
 
+      // Current page of rows; the page never goes past the last one.
+      const pageCount = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
+      const currentPage = Math.min(page, pageCount);
+      const firstIndex = (currentPage - 1) * PAGE_SIZE;
+      const pageRows = rows.slice(firstIndex, firstIndex + PAGE_SIZE);
+
       const subCategories = filters.category
         ? (SOP_CATEGORIES[filters.category] ?? [])
         : [...new Set(Object.values(SOP_CATEGORIES).flat())];
@@ -203,6 +223,14 @@ export class DashboardComponent {
         isReviewer,
         tab,
         rows,
+        pageRows,
+        pager: {
+          page: currentPage,
+          pageCount,
+          pages: Array.from({ length: pageCount }, (_, index) => index + 1),
+          from: rows.length ? firstIndex + 1 : 0,
+          to: firstIndex + pageRows.length,
+        },
         subCategories,
         invalidDateRange,
 
@@ -229,6 +257,7 @@ export class DashboardComponent {
 
   selectTab(tab: DashboardTab): void {
     this.tabSubject.next(tab);
+    this.pageSubject.next(1);
 
     // Keep the tab in the URL, so refresh and "Back" links return to the same tab.
     this.router.navigate([], {
@@ -240,6 +269,10 @@ export class DashboardComponent {
 
   clearSubCategory(): void {
     this.filterForm.controls.subCategory.setValue('');
+  }
+
+  goToPage(page: number): void {
+    this.pageSubject.next(page);
   }
 
   clearFilters(): void {

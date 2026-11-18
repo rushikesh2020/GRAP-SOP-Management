@@ -27,6 +27,11 @@ const STAGE_OF: Record<SopStatus, StageTone> = {
   Rejected: 'rejected',
 };
 
+// Station for a status; drives the colour used for it everywhere.
+export function stageTone(status: SopStatus): StageTone {
+  return STAGE_OF[status];
+}
+
 // Order of the coloured bar segments, following the flow.
 const BAR_ORDER: StageTone[] = ['draft', 'review', 'approved', 'changes', 'rejected'];
 
@@ -240,8 +245,33 @@ export interface ActionItem {
   kind: ActionKind;
   action: RowAction;
   waitingDays: number;
+  // Where the SOP is in its journey, e.g. "SOP-020, review round 3, new file v2 → v3".
+  context: string;
   // The message the user should read first: reviewer remarks, or the creator's comments.
   note: { author: string; text: string } | null;
+}
+
+// "SOP-017, first review" or "SOP-020, review round 3, new file v2 → v3".
+function reviewContext(sop: Sop): string {
+  const round = sop.activity.filter(
+    (event) => event.action === 'Submitted' || event.action === 'Resubmitted',
+  ).length;
+
+  if (round <= 1) {
+    return `${sop.id}, first review`;
+  }
+
+  // Compare with the version the last reviewer saw.
+  const lastDecision = [...sop.activity]
+    .reverse()
+    .find((event) => REVIEW_ACTIONS.includes(event.action));
+
+  const fileChange =
+    lastDecision && lastDecision.version !== sop.version
+      ? `, new file v${lastDecision.version} → v${sop.version}`
+      : ', same file';
+
+  return `${sop.id}, review round ${round}${fileChange}`;
 }
 
 function lastReviewer(sop: Sop): User | null {
@@ -263,6 +293,7 @@ export function buildActionItems(sops: Sop[], user: User, now = Date.now()): Act
         kind: 'review',
         action: rowAction(sop, user)!,
         waitingDays,
+        context: reviewContext(sop),
         note: sop.comments ? { author: sop.uploadedBy.name, text: sop.comments } : null,
       });
       continue;
@@ -279,6 +310,10 @@ export function buildActionItems(sops: Sop[], user: User, now = Date.now()): Act
         kind: sop.status === 'Requested Modification' ? 'make-changes' : 'continue',
         action: rowAction(sop, user)!,
         waitingDays,
+        context:
+          sop.status === 'Requested Modification'
+            ? `${sop.id}, version ${sop.version}, changes requested`
+            : `${sop.id}, version ${sop.version}, changes in progress`,
         note:
           sop.reviewerRemarks && reviewer
             ? { author: reviewer.name, text: sop.reviewerRemarks }

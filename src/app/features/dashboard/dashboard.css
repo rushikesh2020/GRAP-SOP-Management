@@ -116,6 +116,27 @@
   white-space: nowrap;
 }
 
+/* New rows (page, tab or filter change) fade in. */
+.sop-table tbody tr {
+  animation: row-in 0.15s ease-out;
+}
+
+@keyframes row-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sop-table tbody tr {
+    animation: none;
+  }
+}
+
 /* The wrapper already draws the bottom edge. */
 .sop-table tbody tr:last-child td {
   border-bottom: 0;
